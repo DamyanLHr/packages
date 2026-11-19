@@ -20,6 +20,11 @@ Each package gets three pages:
 Read `docs/AUTHORING.md` before writing either. `/packages/kit/` (source:
 `src/content/kit/kit.mdx`) shows every component working.
 
+When a package is created, the layout must be updated too: the home page
+mosaic (`src/layout.ts`) and the "More packages" row on each package page are
+sized for the packages there are. Follow "Add a package" in
+`docs/AUTHORING.md`; a test fails until the mosaic fits.
+
 ## Commands
 
 ```sh

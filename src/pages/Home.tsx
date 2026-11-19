@@ -1,17 +1,8 @@
 import { catalog } from '../catalog'
 import { ShotView } from '../media'
 import { Link } from '../router'
+import { SPAN } from '../layout'
 import { href } from '../routes'
-
-// Mosaic widths for the four-column grid, in catalog order, so every row
-// fills: (2+1+1)(2+2). A package missing here takes one column.
-const SPAN: Record<string, number> = {
-  sky: 2,
-  upscalers: 1,
-  'terrain-rendering': 1,
-  'terrain-dressing': 2,
-  water: 2,
-}
 
 export function Home() {
   const featured = catalog[0]

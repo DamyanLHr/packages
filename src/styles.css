@@ -1105,6 +1105,8 @@ main {
   }
 }
 
+/* the other packages, one row of them: sized for the catalog as it is (five
+   packages, so four others). Update the columns when a package is added. */
 .more-row {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

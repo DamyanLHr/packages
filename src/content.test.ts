@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { allShots, catalog } from './catalog'
+import { MOSAIC_COLUMNS, SPAN } from './layout'
 import { pages } from './pages-list'
 import { href, parse } from './routes'
 
@@ -82,6 +83,19 @@ describe('catalog', () => {
           expect(shot.alt, `${p.id}: ${shot.title} needs alt`).toBeTruthy()
       }
     }
+  })
+
+  it('has a place in the home page mosaic for every package, and the rows fill', () => {
+    // a new package needs its width in src/layout.ts (see "Add a package" in docs/AUTHORING.md)
+    for (const p of catalog)
+      expect(SPAN[p.id], `${p.id} has no width in src/layout.ts`).toBeGreaterThan(0)
+    for (const id of Object.keys(SPAN))
+      expect(
+        catalog.map((p) => p.id),
+        `src/layout.ts names ${id}`,
+      ).toContain(id)
+    const total = catalog.reduce((n, p) => n + SPAN[p.id], 0)
+    expect(total % MOSAIC_COLUMNS, 'the last row of the mosaic is not full').toBe(0)
   })
 
   it('says when an unfinished package is due', () => {

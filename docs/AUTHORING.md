@@ -11,8 +11,24 @@ source is `src/content/kit/kit.mdx`.
    `name`, `unityName` once it has one (`com.damyanlhr.<…>`), a one or two
    sentence `summary`, `status`, `expected` while it is in progress, `pipelines`,
    and `portfolio` (its slug on the portfolio).
-2. Create `src/content/<id>/guide.mdx` and `src/content/<id>/docs.mdx`.
-3. `npm run test` checks both exist and that the entry is complete.
+2. Give it its pictures: a `hero`, and `features`, one section per thing it
+   does, each with its shots. See "Screenshots and showcases" below.
+3. Create `src/content/<id>/guide.mdx` and `src/content/<id>/docs.mdx`.
+4. **Update the layout.** The layouts are sized for the packages there are, so
+   a new one changes them:
+   - the home page mosaic: give the package its width in `src/layout.ts`
+     (one or two of the four columns) and adjust the others so every row is
+     full. Look at the home page at desktop, tablet and phone width.
+   - the "More packages" row at the end of each package page
+     (`.more-row` in `src/styles.css`): it shows every other package in one
+     row of four, so with one more package it needs five columns, or two rows
+     that fill.
+   - the home page's showcase is the first package in the catalog; decide
+     whether the new one goes first.
+   - its portfolio project page links here, and the portfolio's own package
+     list may need the same care.
+5. `npm run test` checks the guide and docs exist, the entry is complete, every
+   package has a width in the mosaic and the mosaic's rows are full.
 
 ## Screenshots and showcases
 
