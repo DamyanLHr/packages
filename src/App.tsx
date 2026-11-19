@@ -21,29 +21,34 @@ export function App() {
   }, [route])
 
   return (
-    <>
+    <div className="site">
       <a className="skip" href="#main">
         Skip to content
       </a>
-      <header className="bar">
-        <div className="bar-inner">
-          <Link className="bar-home" href={href({ kind: 'home' })}>
-            Unity packages
+      <header className="nav">
+        <a className="mark" href={PORTFOLIO} aria-label="Damyan Hristov, portfolio">
+          DH
+        </a>
+        <nav aria-label="Site">
+          <Link
+            className={`nav-link${route.kind === 'kit' || route.kind === 'not-found' ? '' : ' nav-on'}`}
+            href={href({ kind: 'home' })}
+          >
+            Packages
           </Link>
-          <a className="bar-portfolio" href={PORTFOLIO}>
-            Damyan Hristov <span aria-hidden="true">↗</span>
+          <a className="nav-link" href={PORTFOLIO}>
+            Portfolio
           </a>
-        </div>
+        </nav>
       </header>
       <main id="main">
         <Page route={route} />
       </main>
       <footer className="foot">
-        <p>
-          Built and written by <a href={PORTFOLIO}>Damyan Hristov</a>.
-        </p>
+        <span>Damyan Hristov</span>
+        <a href={PORTFOLIO}>damyanlhr.github.io</a>
       </footer>
-    </>
+    </div>
   )
 }
 

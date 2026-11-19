@@ -50,6 +50,27 @@ describe('catalog', () => {
     }
   })
 
+  it('has a showcase and screenshot slots, and every media file it names exists', () => {
+    const PUBLIC = join(import.meta.dirname, '..', 'public')
+    for (const p of catalog) {
+      expect(p.hero.title, p.id).toBeTruthy()
+      expect(p.shots.length, `${p.id} has no screenshot slots`).toBeGreaterThan(0)
+      const titles = p.shots.map((s) => s.title)
+      expect(new Set(titles).size, `${p.id}: two slots share a caption`).toBe(titles.length)
+      for (const shot of [p.hero, ...(p.cover ? [p.cover] : []), ...p.shots]) {
+        for (const file of [shot.src, shot.poster]) {
+          if (!file) continue
+          expect(file, p.id).toMatch(
+            /^media\/[a-z0-9-]+\/[\w.-]+\.(webp|png|jpg|jpeg|avif|mp4|webm)$/,
+          )
+          expect(existsSync(join(PUBLIC, file)), `${p.id}: public/${file}`).toBe(true)
+        }
+        if (shot.src && !/\.(mp4|webm)$/.test(shot.src))
+          expect(shot.alt, `${p.id}: ${shot.title} needs alt`).toBeTruthy()
+      }
+    }
+  })
+
   it('says when an unfinished package is due', () => {
     for (const p of catalog.filter((p) => p.status === 'in-progress')) {
       expect(p.expected, p.id).toBeTruthy()

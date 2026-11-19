@@ -63,7 +63,7 @@ export function Article({ load }: { load: () => Promise<MdxModule> }) {
     return () => io.disconnect()
   }, [mod])
 
-  if (failed) return <p className="lede">This page could not be loaded. Try reloading.</p>
+  if (failed) return <p className="lead">This page could not be loaded. Try reloading.</p>
   if (!mod)
     return (
       <p className="loading" aria-live="polite">
@@ -74,7 +74,7 @@ export function Article({ load }: { load: () => Promise<MdxModule> }) {
   const Content = mod.default
   const refs = mod.references ?? []
   return (
-    <div className="article-grid">
+    <div className={`article-grid${headings.length > 1 ? ' has-toc' : ''}`}>
       <article className="article" ref={body}>
         <ParamsProvider initial={mod.params}>
           <ReferencesContext.Provider value={refs}>

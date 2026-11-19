@@ -25,7 +25,7 @@ export function TransmittancePlot() {
       // axes, with a few honest ticks
       ctx.strokeStyle = c.rule
       ctx.lineWidth = 1
-      ctx.font = '12px "Recursive Variable", system-ui, sans-serif'
+      ctx.font = '12px "IBM Plex Mono", ui-monospace, monospace'
       ctx.fillStyle = c.soft
       for (const t of [0, 0.5, 1]) {
         ctx.beginPath()
@@ -80,7 +80,7 @@ export function TransmittancePlot() {
       ctx.arc(X(d), Y(t), 7, 0, Math.PI * 2)
       ctx.fill()
       ctx.fillStyle = c.ink
-      ctx.font = '600 13px "Recursive Variable", system-ui, sans-serif'
+      ctx.font = '600 13px "IBM Plex Mono", ui-monospace, monospace'
       ctx.textAlign = X(d) > w - 150 ? 'right' : 'left'
       ctx.fillText(
         `${Math.round(t * 100)}% left after ${d.toFixed(1)} m`,

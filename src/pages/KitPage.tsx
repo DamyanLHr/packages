@@ -13,9 +13,9 @@ export function KitPage() {
   }, [])
   return (
     <div className="page page-wide">
-      <header className="pkg-head">
+      <header className="page-head">
         <h1>Writing kit</h1>
-        <p className="lede">
+        <p className="lead">
           Every component a guide or docs page can use, as it renders. The source is
           src/content/kit/kit.mdx.
         </p>

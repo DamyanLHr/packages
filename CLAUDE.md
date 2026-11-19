@@ -50,17 +50,19 @@ Run all three of lint, test and build before pushing; CI runs the same.
 
 ## The look, and keeping it
 
-- The home page opens on a live sky (`src/sky/`): a real single-scattering
-  atmosphere with a sun you drag. It is the one loud thing on the site;
-  everything else stays quiet.
-- Colours live as tokens at the top of `src/styles.css`: high-altitude paper
-  by day, the night sky by night, links in the zenith's blue. **Pink
-  (`--handle`) means "you can drag this"** and is used for nothing else.
-- Type: Recursive (casual axis) for headings and code, Atkinson Hyperlegible
-  for reading.
-- Avoid the generated-page defaults: cream paper with a terracotta accent,
-  all-caps eyebrow labels, middle-dot meta strings, arrows tacked onto links,
-  identical cards everywhere.
+- The site wears the portfolio's julia look (DamyanLHr/damyanlhr.github.io,
+  `src/themes/julia/julia.css`): near-black, one ember accent at measured
+  strengths, Space Grotesk, IBM Plex Mono for data, a fine grain, containers
+  at one radius (8px) and anything you press as a pill. The tokens are at the
+  top of `src/styles.css`; change them there, not per component.
+- Every picture on the site is the package's own: renders, captures, clips.
+  Where one is still to come, its slot shows a viewfinder placeholder with its
+  caption. See "Screenshots and showcases" in `docs/AUTHORING.md`.
+- **Deep orange with a dotted line means "you can drag this"** (`--handle`),
+  in the text and in figures, and nothing else uses it that way.
+- Avoid the generated-page defaults: all-caps eyebrow labels on every heading,
+  identical cards with soft shadows, gradient washes as decoration, arrows
+  tacked onto links.
 - Guides should be fun to learn from: see "Making it fun to learn from" in
   `docs/AUTHORING.md`.
 

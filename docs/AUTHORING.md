@@ -14,6 +14,35 @@ source is `src/content/kit/kit.mdx`.
 2. Create `src/content/<id>/guide.mdx` and `src/content/<id>/docs.mdx`.
 3. `npm run test` checks both exist and that the entry is complete.
 
+## Screenshots and showcases
+
+Every package page opens on a wide showcase, its card on the home page shows a
+cover, and its page has a gallery of screenshots. They are all the package's
+own renders, captures and clips, set in `src/catalog.ts`:
+
+```ts
+hero: { title: 'Volumetric Sky in a scene', src: 'media/sky/hero.mp4', poster: 'media/sky/hero.webp' },
+cover: { title: 'Clouds at dusk', src: 'media/sky/cover.webp', alt: 'Clouds lit from below at dusk' },
+shots: [
+  { title: 'Atmosphere', src: 'media/sky/atmosphere.webp', alt: 'The sky from noon to sunset' },
+  { title: 'Volumetric clouds' },
+],
+```
+
+- Files go in `public/media/<id>/`. Images as `.webp` (or `.png`, `.jpg`,
+  `.avif`), clips as `.mp4` or `.webm`, muted, short and looping, with a
+  `poster` still. A clip plays by itself unless the reader asked for less
+  motion.
+- A shot without `src` is a slot: it shows a viewfinder frame with its caption
+  until the file exists, so the page keeps its shape. Name each slot after
+  what it will show, from what the package really has.
+- Images need `alt`; the tests check that, and that every file named exists.
+- Sizes: the hero is shown wide and cropped to the band (about 21:9 on a
+  desktop), so keep the subject in the middle and export it at least 2400 px
+  wide. Gallery shots are 16:9 at 1920 by 1080. A gallery with an odd number of
+  shots shows the last one wide.
+- The first package in the catalog is the home page's showcase.
+
 ## The guide
 
 The guide teaches how the package works, deeply enough that a reader could
@@ -99,10 +128,11 @@ checking it.
 
 ### Interactive figures
 
-Pink means one thing on this site: **you can drag this**. Every scrubbable
-number, every handle in a figure and every slider is drawn in `--handle`
-(`c.handle` in a figure), and nothing else is. Keep it that way, so readers
-only learn it once.
+Deep orange with a dotted line means one thing on this site: **you can drag
+this**. Every scrubbable number, every handle in a figure and every slider is
+drawn in `--handle` (`c.handle` in a figure), and nothing else is. Links are the
+lighter orange with a solid line. Keep it that way, so readers only learn it
+once.
 
 A page's shared numbers start in one export at the top of its MDX file. Every
 `<Scrub>`, `<Live>` and figure that names one reads and sets the same value, so

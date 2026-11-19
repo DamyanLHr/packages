@@ -23,7 +23,7 @@ Shine a torch into fog and some of its light never comes out the other side.
 Here is how much. Light that crosses <Scrub name="d" min={0.1} max={5} step={0.1} unit=" m" label="thickness of the fog" />
 of fog with a density of <Scrub name="sigma" min={0.05} max={3} step={0.05} label="density of the fog" /> per
 metre keeps <Live f={(p) => `${Math.round(100 * Math.exp(-p.sigma * p.d))}%`} /> of its
-energy. Drag either pink number sideways and the answer follows.<Side>Anything pink can be dragged: numbers in the text, points and edges in the figures. Focus one with Tab and the arrow keys work too.</Side>
+energy. Drag either orange number sideways and the answer follows.<Side>Anything in deep orange with a dotted line, or drawn in it in a figure, can be dragged. Focus one with Tab and the arrow keys work too.</Side>
 
 The reason is that every photon has the same small chance of being stopped in
 every little stretch of fog, no matter how far it has come. Fire enough of

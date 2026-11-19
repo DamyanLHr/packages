@@ -50,11 +50,7 @@ export default defineConfig({
       enforce: 'pre',
       ...mdx({
         remarkPlugins: [remarkGfm, remarkMath],
-        rehypePlugins: [
-          rehypeSlug,
-          rehypeKatex,
-          [rehypeShiki, { themes: { light: 'github-light', dark: 'github-dark' } }],
-        ],
+        rehypePlugins: [rehypeSlug, rehypeKatex, [rehypeShiki, { theme: 'github-dark' }]],
         providerImportSource: undefined,
       }),
     },

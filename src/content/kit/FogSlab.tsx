@@ -155,7 +155,7 @@ export function FogSlab() {
       const { through, lost } = count.current
       const settled = through + lost
       ctx.fillStyle = c.ink
-      ctx.font = '600 13px "Recursive Variable", system-ui, sans-serif'
+      ctx.font = '600 13px "IBM Plex Mono", ui-monospace, monospace'
       ctx.textAlign = 'right'
       const still = !playing && photons.current.length === 0
       const measured = still
@@ -165,7 +165,7 @@ export function FogSlab() {
           : 'counting…'
       ctx.fillText(measured, w - 10, 22)
       ctx.fillStyle = c.soft
-      ctx.font = '13px "Recursive Variable", system-ui, sans-serif'
+      ctx.font = '13px "IBM Plex Mono", ui-monospace, monospace'
       if (!still)
         ctx.fillText(`the law says ${Math.round(100 * Math.exp(-sigma * d))}%`, w - 10, 40)
     },

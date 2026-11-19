@@ -3,6 +3,22 @@
 // docs live in src/content/<id>/guide.mdx and docs.mdx (a test checks both
 // exist for every entry). See docs/AUTHORING.md.
 
+/**
+ * One picture or clip of the package itself: a render, a capture, a
+ * comparison. Until `src` is set it shows as a placeholder that says what is
+ * coming, so the page has its shape before the media exists.
+ */
+export interface Shot {
+  /** what it shows, as a short caption: 'Volumetric clouds' */
+  title: string
+  /** under public/: 'media/sky/clouds.webp' (or .mp4 / .webm for a clip) */
+  src?: string
+  /** for an image, what it shows, for screen readers */
+  alt?: string
+  /** for a clip, the still shown before it plays (also under public/) */
+  poster?: string
+}
+
 export interface UnityPackage {
   /** URL segment: /packages/<id>/ */
   id: string
@@ -20,6 +36,12 @@ export interface UnityPackage {
   repo?: string
   /** its slug on the portfolio: https://damyanlhr.github.io/projects/<slug> */
   portfolio: string
+  /** the wide showcase at the top of its page (and the home page, for the first package) */
+  hero: Shot
+  /** what its card on the home page shows; the hero if left out */
+  cover?: Shot
+  /** the gallery on its page, one slot per thing worth seeing */
+  shots: Shot[]
 }
 
 export const catalog: UnityPackage[] = [
@@ -33,6 +55,14 @@ export const catalog: UnityPackage[] = [
     expected: 'Q2 2027',
     pipelines: 'URP today, HDRP planned',
     portfolio: 'sky-package',
+    hero: { title: 'Volumetric Sky in a scene' },
+    shots: [
+      { title: 'Atmosphere' },
+      { title: 'Volumetric clouds' },
+      { title: 'Weather' },
+      { title: 'Quality tiers, side by side' },
+      { title: 'Diagnostics' },
+    ],
   },
   {
     id: 'upscalers',
@@ -43,6 +73,8 @@ export const catalog: UnityPackage[] = [
     status: 'in-progress',
     expected: 'Q2 2027',
     portfolio: 'upscalers-package',
+    hero: { title: 'Upscalers in a scene' },
+    shots: [{ title: 'DLSS' }, { title: 'FSR 2' }, { title: 'The reactive mask' }],
   },
   {
     id: 'terrain-rendering',
@@ -52,6 +84,8 @@ export const catalog: UnityPackage[] = [
     expected: 'Q2 2027',
     pipelines: 'URP and HDRP',
     portfolio: 'terrain-rendering',
+    hero: { title: 'Terrain Rendering in a scene' },
+    shots: [{ title: 'Up close' }, { title: 'From far away' }],
   },
   {
     id: 'terrain-dressing',
@@ -61,6 +95,8 @@ export const catalog: UnityPackage[] = [
     expected: 'Q2 2027',
     pipelines: 'URP and HDRP',
     portfolio: 'terrain-dressing',
+    hero: { title: 'Terrain Dressing in a scene' },
+    shots: [{ title: 'Vegetation' }, { title: 'Rocks' }, { title: 'Ground detail' }],
   },
   {
     id: 'water',
@@ -69,6 +105,8 @@ export const catalog: UnityPackage[] = [
     status: 'in-progress',
     expected: 'Q2 2027',
     portfolio: 'water-package',
+    hero: { title: 'Water in a scene' },
+    shots: [{ title: 'Up close' }, { title: 'From far away' }],
   },
 ]
 
