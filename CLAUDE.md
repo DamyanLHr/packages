@@ -3,11 +3,14 @@
 The site for Damyan Hristov's Unity packages, served at
 https://damyanlhr.github.io/packages/ (GitHub Pages serves this repository
 under /packages/ next to the portfolio, DamyanLHr/damyanlhr.github.io). Every
-push to `main` deploys through `.github/workflows/deploy.yml`.
+push to `main` deploys through `.github/workflows/deploy.yml`. GitHub does not
+always start it for a push, so `.github/workflows/deploy-watch.yml` checks every
+ten minutes and starts it for any commit on main that has no Deploy run yet.
 
 Each package gets three pages:
 
-- **Overview** (`/packages/<id>/`): from `src/catalog.ts`.
+- **Overview** (`/packages/<id>/`): the package's showcase, a full-width page
+  of its own pictures, one section per thing it does. From `src/catalog.ts`.
 - **Guide** (`/packages/<id>/guide/`): an interactive, in-depth learning guide
   to how the package works and everything in it, with references.
   `src/content/<id>/guide.mdx`.

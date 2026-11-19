@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { catalog } from './catalog'
+import { allShots, catalog } from './catalog'
 import { pages } from './pages-list'
 import { href, parse } from './routes'
 
@@ -50,14 +50,27 @@ describe('catalog', () => {
     }
   })
 
-  it('has a showcase and screenshot slots, and every media file it names exists', () => {
+  it('has a showcase and sections of pictures, and every media file it names exists', () => {
     const PUBLIC = join(import.meta.dirname, '..', 'public')
     for (const p of catalog) {
       expect(p.hero.title, p.id).toBeTruthy()
-      expect(p.shots.length, `${p.id} has no screenshot slots`).toBeGreaterThan(0)
-      const titles = p.shots.map((s) => s.title)
-      expect(new Set(titles).size, `${p.id}: two slots share a caption`).toBe(titles.length)
-      for (const shot of [p.hero, ...(p.cover ? [p.cover] : []), ...p.shots]) {
+      expect(p.features.length, `${p.id} has no sections`).toBeGreaterThan(0)
+      const sections = p.features.map((f) => f.title)
+      expect(new Set(sections).size, `${p.id}: two sections share a name`).toBe(sections.length)
+      for (const f of p.features) {
+        expect(
+          f.shots.length + (f.compare ? 1 : 0),
+          `${p.id}: ${f.title} is empty`,
+        ).toBeGreaterThan(0)
+        expect(f.text ?? '', `${p.id}: ${f.title}`).not.toMatch(/[–—]/)
+      }
+      // a picture's caption names it in the viewer, so no two on a page share one
+      const pictures = p.features.flatMap((f) => [
+        ...(f.compare ? [f.compare.title] : []),
+        ...f.shots.map((s) => s.title),
+      ])
+      expect(new Set(pictures).size, `${p.id}: two pictures share a caption`).toBe(pictures.length)
+      for (const shot of allShots(p)) {
         for (const file of [shot.src, shot.poster]) {
           if (!file) continue
           expect(file, p.id).toMatch(

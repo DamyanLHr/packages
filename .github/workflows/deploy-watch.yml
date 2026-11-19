@@ -1,0 +1,33 @@
+name: Deploy what main holds
+
+# GitHub does not start Deploy for some pushes to this repository (the push
+# event never arrives, so no run appears at all). This checks every ten
+# minutes that the newest commit on main has a Deploy run, and starts one if
+# it has none. When a push does start Deploy, there is nothing for it to do.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start Deploy if main has none
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          head=$(gh api "repos/$REPO/commits/main" --jq .sha)
+          runs=$(gh api "repos/$REPO/actions/workflows/deploy.yml/runs?head_sha=$head&per_page=1" --jq .total_count)
+          if [ "$runs" = "0" ]; then
+            echo "main is at $head and has no Deploy run: starting one"
+            gh workflow run deploy.yml --repo "$REPO" --ref main
+          else
+            echo "main is at $head and already has a Deploy run"
+          fi

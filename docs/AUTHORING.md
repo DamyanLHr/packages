@@ -16,16 +16,33 @@ source is `src/content/kit/kit.mdx`.
 
 ## Screenshots and showcases
 
-Every package page opens on a wide showcase, its card on the home page shows a
-cover, and its page has a gallery of screenshots. They are all the package's
-own renders, captures and clips, set in `src/catalog.ts`:
+A package's overview page is its showcase: a full-width hero with its name
+over it, then one section per thing the package does, each with its own
+pictures, then the ways in to the guide and docs. Its card on the home page
+shows a cover. They are all the package's own renders, captures and clips, set
+in `src/catalog.ts`:
 
 ```ts
 hero: { title: 'Volumetric Sky in a scene', src: 'media/sky/hero.mp4', poster: 'media/sky/hero.webp' },
 cover: { title: 'Clouds at dusk', src: 'media/sky/cover.webp', alt: 'Clouds lit from below at dusk' },
-shots: [
-  { title: 'Atmosphere', src: 'media/sky/atmosphere.webp', alt: 'The sky from noon to sunset' },
-  { title: 'Volumetric clouds' },
+features: [
+  {
+    title: 'Volumetric clouds',
+    text: 'Clouds you can look at from below, from the side and against the light.',
+    shots: [
+      { title: 'From the ground', src: 'media/sky/clouds-ground.webp', alt: 'Cumulus seen from below at noon' },
+      { title: 'Against the sun' },
+    ],
+  },
+  {
+    title: 'Quality tiers',
+    compare: {
+      title: 'The lowest tier and the highest',
+      a: { title: 'Lowest tier', src: 'media/sky/tier-low.webp', alt: 'The view at the lowest tier' },
+      b: { title: 'Highest tier', src: 'media/sky/tier-high.webp', alt: 'The same view at the highest tier' },
+    },
+    shots: [{ title: 'Every tier, side by side' }],
+  },
 ],
 ```
 
@@ -34,14 +51,29 @@ shots: [
   `poster` still. A clip plays by itself unless the reader asked for less
   motion.
 - A shot without `src` is a slot: it shows a viewfinder frame with its caption
-  until the file exists, so the page keeps its shape. Name each slot after
-  what it will show, from what the package really has.
-- Images need `alt`; the tests check that, and that every file named exists.
-- Sizes: the hero is shown wide and cropped to the band (about 21:9 on a
-  desktop), so keep the subject in the middle and export it at least 2400 px
-  wide. Gallery shots are 16:9 at 1920 by 1080. A gallery with an odd number of
-  shots shows the last one wide.
+  and "to come" until the file exists, so the page keeps its shape. Name each
+  slot after what it will show, from what the package really has, and rename
+  or remove slots freely once you know what you have.
+- A section lays out its pictures by how many it has: one shows wide; two
+  side by side, the first larger; three as one large beside two stacked (the
+  large one swaps sides from one such section to the next); four or more as one
+  wide over a row. The first picture leads, so put the best one first.
+- A `compare` is two captures of the exact same view, shown one over the
+  other with a line the reader drags between them: a setting off and on, a low
+  tier and a high one, native and upscaled. It leads its section. Capture both
+  from the same camera at the same size.
+- Every finished image opens full size, and the viewer steps through all of
+  the page's images with the arrow keys.
+- Images need `alt`; the tests check that, that every file named exists, and
+  that no two pictures on a page share a caption.
+- Sizes: the hero fills the screen and is cropped to it, so keep the subject
+  in the middle and right of the frame (the name sits over the lower left), and
+  export it at least 2560 px wide. Section pictures are cropped to 21:9 or
+  16:9 depending on where they fall; export them at 1920 by 1080 or larger and
+  keep the subject away from the lower left edge, where the caption sits.
 - The first package in the catalog is the home page's showcase.
+- Every package ends on an "In the editor" section (the `inTheEditor` helper
+  in the catalog): the inspector, and the package set up in a scene.
 
 ## The guide
 
