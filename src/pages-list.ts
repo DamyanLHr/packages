@@ -15,7 +15,7 @@ export function pages(): PageInfo[] {
       path: '',
       title: SITE_NAME,
       description:
-        'Unity packages by Damyan Hristov, each with a learning guide to how it works and docs for its API.',
+        'Unity packages by Damyan Hristov, each with a guide to how it works and docs for its API.',
     },
   ]
   for (const p of catalog) {
@@ -29,7 +29,7 @@ export function pages(): PageInfo[] {
       {
         path: `${p.id}/docs/`,
         title: `${p.name} docs · ${SITE_NAME}`,
-        description: `The ${p.name} package's API and everything you need to use it.`,
+        description: `Installing the ${p.name} package, setting it up, and its API.`,
       },
     )
   }

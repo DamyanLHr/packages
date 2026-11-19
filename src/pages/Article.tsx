@@ -3,6 +3,7 @@ import type { MdxModule } from '../content-index'
 import { References } from '../mdx/components'
 import { mdxComponents } from '../mdx'
 import { ReferencesContext } from '../mdx/references'
+import { ParamsProvider } from '../mdx/explorable'
 
 interface Heading {
   id: string
@@ -75,9 +76,11 @@ export function Article({ load }: { load: () => Promise<MdxModule> }) {
   return (
     <div className="article-grid">
       <article className="article" ref={body}>
-        <ReferencesContext.Provider value={refs}>
-          <Content components={mdxComponents as never} />
-        </ReferencesContext.Provider>
+        <ParamsProvider initial={mod.params}>
+          <ReferencesContext.Provider value={refs}>
+            <Content components={mdxComponents as never} />
+          </ReferencesContext.Provider>
+        </ParamsProvider>
         {refs.length > 0 && <References items={refs} />}
       </article>
       {headings.length > 1 && (

@@ -24,14 +24,12 @@ export function PackagePage({ pkg }: { pkg: UnityPackage }) {
         <Link className="door" href={href({ kind: 'guide', id: pkg.id })}>
           <span className="door-title">Guide</span>
           <span className="door-text">
-            How it works, step by step, with interactive figures and references.
+            How it works, from the idea to the shader, with figures you can play with.
           </span>
         </Link>
         <Link className="door" href={href({ kind: 'docs', id: pkg.id })}>
           <span className="door-title">Docs</span>
-          <span className="door-text">
-            The API, setup and everything you need to use it in a project.
-          </span>
+          <span className="door-text">Install it, set it up, and look up any type or setting.</span>
         </Link>
       </div>
       <p className="aside">

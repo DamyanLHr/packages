@@ -17,17 +17,37 @@ source is `src/content/kit/kit.mdx`.
 ## The guide
 
 The guide teaches how the package works, deeply enough that a reader could
-build it themselves, and covers everything in it. It is the place for the
-ideas, the maths, the implementation and the trade-offs, with interactive
-figures wherever moving a slider explains more than a paragraph.
+build it themselves, and covers everything in it: the ideas, the maths, the
+implementation and the trade-offs. It should be fun. People learn a thing by
+poking it, so the guide gives them something to poke in every section.
 
 A shape that works:
 
-1. What the package does and what you will understand by the end.
+1. What the package does, shown first: a figure the reader can play with
+   before any explanation.
 2. Each part in turn: the idea, the maths, how the package implements it, what
    its settings change, and what it costs.
 3. How the parts fit together.
-4. Where to read further: the references.
+4. Where to read further: the references, printed at the end by themselves.
+
+### Making it fun to learn from
+
+- **Show, then explain.** Open each idea with something to drag, then say why
+  it behaves that way.
+- **Ask before telling.** A `<Quiz>` just before an answer makes the reader
+  guess, and a guess makes the answer stick. Say why in the `why`, not only
+  what.
+- **Put the numbers in the sentences.** A `<Scrub>` in the text that drives the
+  figure beside it beats a slider under the figure: the reader changes the
+  claim and watches it hold.
+- **One idea per figure.** A figure that shows everything teaches nothing.
+  Build the full picture across several figures that share their numbers.
+- **Simulate, do not only plot.** The photons in the kit's first figure teach
+  what the curve in its second only states. Where a process is random or
+  step by step, let the reader watch it happen.
+- **Fold the heavy maths.** Keep the main line readable and put derivations in
+  `<Reveal>`, for the readers who want them.
+- **Asides go in the margin.** `<Side>` keeps the main line moving.
 
 ### Text
 
@@ -79,12 +99,51 @@ checking it.
 
 ### Interactive figures
 
-A demo is a React component of the package's own, in
-`src/content/<id>/demos/`, built from `Demo`, `Slider` and `Toggle` (import
-them from `../../mdx/components`). `src/content/kit/Transmittance.tsx` is the
-example to copy: state, controls, and a drawing that redraws when the state
-changes, coloured from the page's CSS variables so it works in light and dark.
-Import it at the top of the MDX file and place it:
+Pink means one thing on this site: **you can drag this**. Every scrubbable
+number, every handle in a figure and every slider is drawn in `--handle`
+(`c.handle` in a figure), and nothing else is. Keep it that way, so readers
+only learn it once.
+
+A page's shared numbers start in one export at the top of its MDX file. Every
+`<Scrub>`, `<Live>` and figure that names one reads and sets the same value, so
+dragging a number in a sentence moves the figures, and dragging a figure
+changes the sentence:
+
+```mdx
+export const params = { sigma: 0.8, d: 2 }
+
+Light that crosses <Scrub name="d" min={0.1} max={5} step={0.1} unit=" m" label="thickness of the fog" />
+of fog keeps <Live f={(p) => `${Math.round(100 * Math.exp(-p.sigma * p.d))}%`} /> of its energy.
+```
+
+`label` is what a screen reader hears; Tab and the arrow keys work on every
+`<Scrub>`.
+
+A figure is a React component of the package's own, in
+`src/content/<id>/demos/`. Copy `src/content/kit/FogSlab.tsx` (a simulation
+that runs, with Play, Pause and Reset) or `TransmittancePlot.tsx` (a plot with
+a point you drag). The pieces:
+
+- `useParam('sigma', 0.8)` from `src/mdx/params` gives a shared number and its
+  setter.
+- `useCanvas(draw, deps)` from `src/mdx/canvas` gives a crisp canvas that
+  repaints when `deps` change, on resize, and when the colour scheme flips.
+  `draw` gets the page's colours (`c.ink`, `c.soft`, `c.rule`, `c.link`,
+  `c.handle`, `c.data2`), so the figure works in light and dark.
+- `Demo` from `src/mdx/components` is the frame: title, caption, controls,
+  and `onReset`, `playing` and `onPlay` for figures that move. Figures number
+  themselves.
+- `prefersStill()` says the reader asked for less motion: start paused, and
+  draw a still version that teaches on its own (the fog figure draws twelve
+  rays instead of moving photons).
+
+Every handle in a canvas needs a keyboard way in: give the canvas
+`role="slider"`, `tabIndex={0}`, an `aria-valuetext` that says what it shows
+in words, and arrow keys. Use `touch-action: pan-y` (the default for
+`.demo-canvas`) so a phone still scrolls past it. Keep figures light: they run
+in the reader's browser, often on a phone.
+
+Import a figure at the top of the MDX file and place it:
 
 ```mdx
 import { Phase } from './demos/Phase'
@@ -92,8 +151,20 @@ import { Phase } from './demos/Phase'
 <Phase />
 ```
 
-Keep demos light: they run in the reader's browser. Give each canvas a `role="img"`
-and an `aria-label` that says what it shows.
+### Questions, margin notes and folded maths
+
+```mdx
+<Quiz
+  question="A fog 2 m thick lets 20% of the light through. How much gets through 4 m?"
+  options={['10%', '4%', 'None', '40%']}
+  answer={1}
+  why="The second 2 m keeps 20% of what the first let through: 20% of 20% is 4%."
+/>
+
+A sentence with an aside.<Side>The aside, in the margin beside it.</Side>
+
+<Reveal title="Show the maths">The derivation, folded until it is wanted.</Reveal>
+```
 
 ### Images
 

@@ -1,7 +1,10 @@
-{/* The writing kit: every component a guide or docs page can use, working.
-Everything here is an example, not a description of any package. */}
+{/* The writing kit, written as a short lesson so every component is shown
+    doing its job. It is an example: nothing here describes a package. */}
 
-import { Transmittance } from './Transmittance'
+import { FogSlab } from './FogSlab'
+import { TransmittancePlot } from './TransmittancePlot'
+
+export const params = { sigma: 0.8, d: 2 }
 
 export const references = [
   {
@@ -14,59 +17,63 @@ export const references = [
   },
 ]
 
-## Prose and headings
+## How fog eats light
 
-Write in plain sentences. Every `##` and `###` heading gets an anchor and shows
-up in "On this page". Links, **bold**, _italic_ and `inline code` work as in
-Markdown, and so do tables:
+Shine a torch into fog and some of its light never comes out the other side.
+Here is how much. Light that crosses <Scrub name="d" min={0.1} max={5} step={0.1} unit=" m" label="thickness of the fog" />
+of fog with a density of <Scrub name="sigma" min={0.05} max={3} step={0.05} label="density of the fog" /> per
+metre keeps <Live f={(p) => `${Math.round(100 * Math.exp(-p.sigma * p.d))}%`} /> of its
+energy. Drag either pink number sideways and the answer follows.<Side>Anything pink can be dragged: numbers in the text, points and edges in the figures. Focus one with Tab and the arrow keys work too.</Side>
 
-| Setting | What it does                                                  |
-| ------- | ------------------------------------------------------------- |
-| Density | How much the medium absorbs and scatters per unit of distance |
-| Steps   | How many samples are taken along a ray                        |
+The reason is that every photon has the same small chance of being stopped in
+every little stretch of fog, no matter how far it has come. Fire enough of
+them and count:
 
-## Maths
+<FogSlab />
 
-Inline maths goes between single dollars, like $T = e^{-\sigma d}$. A line of
-its own goes between double dollars:
+The count wanders, then settles on the law's answer. That law is the
+Beer-Lambert law <Cite id="pbrt4" />:
 
 $$
-T(d) = \exp\left(-\int_0^d \sigma(s)\,ds\right)
+T(d) = e^{-\sigma d}
 $$
 
-## Citations
+<Reveal>
+  In a thin slice of fog of thickness $\,dx$, a fraction $\sigma\,dx$ of the
+  light that reaches it is lost, so $\dfrac{dL}{dx} = -\sigma L$. The function
+  that shrinks in proportion to itself is the exponential, which gives
+  $L(d) = L(0)\,e^{-\sigma d}$, and $T(d) = L(d) / L(0)$.
+</Reveal>
 
-Cite a reference with its id, and it is numbered in the order of the
-`references` list at the top of the file <Cite id="pbrt4" />. The list prints
-itself at the end of the page.
+## The same law as a curve
 
-## Notes
+The point on this curve is the same fog as the figure above. Move either one
+and the other follows.
 
-<Note>A note: something worth knowing alongside the text.</Note>
+<TransmittancePlot />
 
-<Note kind="tip">A tip: a better way to do what the text describes.</Note>
+<Quiz
+  question="A fog 2 m thick lets 20% of the light through. How much gets through 4 m of the same fog?"
+  options={['10%', '4%', 'None', '40%']}
+  answer={1}
+  why="The second 2 m keeps 20% of whatever the first 2 m let through, and 20% of 20% is 4%. Transmittance multiplies along a ray."
+/>
+
+## Notes in the text
+
+<Note>Fog in a real sky is not uniform, so a renderer adds the density up along the ray instead of multiplying one number by the distance.</Note>
+
+<Note kind="tip">Store optical depth, $\sigma d$, rather than transmittance when you march a ray: depths add, so there is one exponential at the end instead of one per step.</Note>
 
 <Note kind="warning" title="Careful with this">
-  A warning: something that will go wrong if it is missed.
+  Density is per unit of distance. Change the scene's units from metres to
+  kilometres and the same number makes fog a thousand times thicker.
 </Note>
-
-## An interactive figure
-
-Demos are components of the package's own, in `src/content/<id>/demos/`, built
-from `Demo`, `Slider` and `Toggle`:
-
-<Transmittance />
 
 ## Code
 
-Fenced code is highlighted at build time, in C#, HLSL, shell or anything else:
-
-```csharp
-public sealed class ExampleSettings : ScriptableObject
-{
-    [Range(0f, 1f)] public float density = 0.5f;
-}
-```
+Fenced code is highlighted when the site is built, in C#, HLSL or anything
+else:
 
 ```hlsl
 float Transmittance(float sigma, float distance)
@@ -75,15 +82,28 @@ float Transmittance(float sigma, float distance)
 }
 ```
 
+```csharp
+public sealed class FogSettings : ScriptableObject
+{
+    [Range(0f, 3f)] public float density = 0.8f;
+}
+```
+
+Tables work too:
+
+| Setting | What it does |
+| ------- | ------------ |
+| Density | How much the fog stops per metre |
+| Steps   | How many samples are taken along a ray |
+
 ## API reference
 
-For the docs pages: each public type, then each of its members with its
-signature.
+For the docs pages, each public type and then each of its members:
 
-<ApiType name="ExampleSettings" kind="class" namespace="Example.Namespace">
-  An example type, to show the layout.
+<ApiType name="FogSettings" kind="class" namespace="Example">
+  The example type above, to show the layout.
 
   <ApiMember signature="public float density">
-    How dense the medium is, from 0 to 1.
+    How much the fog stops per metre, from 0 to 3.
   </ApiMember>
 </ApiType>

@@ -6,6 +6,8 @@ export interface MdxModule {
   default: ComponentType<{ components?: Record<string, ComponentType<never>> }>
   /** the page's references, in the order they are numbered */
   references?: Reference[]
+  /** where the page's shared numbers start: what <Scrub>, <Live> and its figures read */
+  params?: Record<string, number>
 }
 
 // Each page is its own chunk, fetched when it is opened.

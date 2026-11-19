@@ -2,9 +2,9 @@
 
 Guides and docs for my Unity packages, at **https://damyanlhr.github.io/packages/**.
 
-Each package has a guide that walks through how it works, with interactive
-figures and references, and docs that list its API and everything you need to
-use it. The packages themselves live in their own repositories, each linking
+Each package has a guide that teaches how it works, with figures you can play
+with and the sources it builds on, and docs for installing it and looking up
+its API. The packages themselves live in their own repositories, each linking
 back to its pages here.
 
 | Package                               | Guide                                                                  | Docs                                                                 |

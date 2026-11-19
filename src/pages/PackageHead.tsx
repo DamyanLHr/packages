@@ -27,7 +27,11 @@ export function PackageHead({
         <span>{pkg.name}</span>
       </p>
       <h1>{current === 'package' ? pkg.name : `${pkg.name} ${current}`}</h1>
-      {pkg.unityName && <p className="pkg-id">{pkg.unityName}</p>}
+      {pkg.unityName && (
+        <p className="pkg-id">
+          <code>{pkg.unityName}</code>
+        </p>
+      )}
       <nav className="tabs" aria-label={`${pkg.name} pages`}>
         {tabs.map((t) => (
           <Link
@@ -44,9 +48,7 @@ export function PackageHead({
             Repository <span aria-hidden="true">↗</span>
           </a>
         ) : (
-          <span className="tab tab-off" title="The repository is not public yet">
-            Repository soon
-          </span>
+          <span className="tab tab-off">Repository (not public yet)</span>
         )}
       </nav>
     </header>

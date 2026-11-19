@@ -12,30 +12,29 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@fontsource/ibm-plex-mono": "^5.3.0",
-    "@fontsource/source-serif-4": "^5.3.1",
-    "@fontsource/space-grotesk": "^5.3.0",
+    "@fontsource-variable/recursive": "^5.3.0",
+    "@fontsource/atkinson-hyperlegible": "^5.3.0",
     "katex": "^0.19.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "vite": "^8.1.1",
-    "@vitejs/plugin-react": "^6.0.3",
-    "typescript": "~6.0.2",
-    "vitest": "^4.1.10",
-    "oxlint": "^1.71.0",
-    "prettier": "^3.9.4",
+    "@mdx-js/rollup": "^3.1.1",
+    "@shikijs/rehype": "^3.0.0",
+    "@types/mdx": "^2.0.13",
+    "@types/node": "^24.13.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@types/node": "^24.13.2",
-    "@types/mdx": "^2.0.13",
-    "@mdx-js/rollup": "^3.1.1",
-    "remark-gfm": "^4.0.1",
-    "remark-math": "^6.0.0",
+    "@vitejs/plugin-react": "^6.0.3",
+    "oxlint": "^1.71.0",
+    "prettier": "^3.9.4",
     "rehype-katex": "^7.0.1",
     "rehype-slug": "^6.0.0",
-    "@shikijs/rehype": "^3.0.0",
-    "shiki": "^3.0.0"
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "shiki": "^3.0.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1",
+    "vitest": "^4.1.10"
   }
 }

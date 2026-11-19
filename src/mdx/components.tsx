@@ -96,18 +96,44 @@ export function Demo({
   controls,
   children,
   caption,
+  onReset,
+  playing,
+  onPlay,
 }: {
   title: string
   controls?: ReactNode
   children: ReactNode
   caption?: ReactNode
+  /** puts every number the figure owns back where it started */
+  onReset?: () => void
+  /** for a figure that moves on its own: whether it is moving, and the switch */
+  playing?: boolean
+  onPlay?: (playing: boolean) => void
 }) {
   return (
     <figure className="demo" aria-label={title}>
       <div className="demo-stage">{children}</div>
-      {controls && <div className="demo-controls">{controls}</div>}
+      {(controls || onReset || onPlay) && (
+        <div className="demo-controls">
+          {controls}
+          {(onReset || onPlay) && (
+            <div className="demo-buttons">
+              {onPlay && (
+                <button type="button" className="demo-button" onClick={() => onPlay(!playing)}>
+                  {playing ? 'Pause' : 'Play'}
+                </button>
+              )}
+              {onReset && (
+                <button type="button" className="demo-button" onClick={onReset}>
+                  Reset
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       <figcaption>
-        <strong>{title}.</strong> {caption}
+        <span className="demo-title">{title}.</span> {caption}
       </figcaption>
     </figure>
   )

@@ -48,6 +48,22 @@ Run all three of lint, test and build before pushing; CI runs the same.
   (impeccable, frontend-design, web-design-guidelines, archify for diagrams)
   are there for this.
 
+## The look, and keeping it
+
+- The home page opens on a live sky (`src/sky/`): a real single-scattering
+  atmosphere with a sun you drag. It is the one loud thing on the site;
+  everything else stays quiet.
+- Colours live as tokens at the top of `src/styles.css`: high-altitude paper
+  by day, the night sky by night, links in the zenith's blue. **Pink
+  (`--handle`) means "you can drag this"** and is used for nothing else.
+- Type: Recursive (casual axis) for headings and code, Atkinson Hyperlegible
+  for reading.
+- Avoid the generated-page defaults: cream paper with a terracotta accent,
+  all-caps eyebrow labels, middle-dot meta strings, arrows tacked onto links,
+  identical cards everywhere.
+- Guides should be fun to learn from: see "Making it fun to learn from" in
+  `docs/AUTHORING.md`.
+
 ## Package repositories link back here
 
 Each package's own repository README must link to this site, and to its own
