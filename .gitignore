@@ -1,0 +1,12 @@
+node_modules
+dist
+*.local
+*.log
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# local claude workspace; the vendored skills are tracked so they travel with the repo
+.claude/*
+!.claude/skills/

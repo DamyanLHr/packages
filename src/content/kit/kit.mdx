@@ -1,0 +1,89 @@
+{/* The writing kit: every component a guide or docs page can use, working.
+Everything here is an example, not a description of any package. */}
+
+import { Transmittance } from './Transmittance'
+
+export const references = [
+  {
+    id: 'pbrt4',
+    authors: 'Matt Pharr, Wenzel Jakob and Greg Humphreys',
+    title: 'Physically Based Rendering: From Theory to Implementation',
+    where: 'fourth edition',
+    year: 2023,
+    url: 'https://pbr-book.org/',
+  },
+]
+
+## Prose and headings
+
+Write in plain sentences. Every `##` and `###` heading gets an anchor and shows
+up in "On this page". Links, **bold**, _italic_ and `inline code` work as in
+Markdown, and so do tables:
+
+| Setting | What it does                                                  |
+| ------- | ------------------------------------------------------------- |
+| Density | How much the medium absorbs and scatters per unit of distance |
+| Steps   | How many samples are taken along a ray                        |
+
+## Maths
+
+Inline maths goes between single dollars, like $T = e^{-\sigma d}$. A line of
+its own goes between double dollars:
+
+$$
+T(d) = \exp\left(-\int_0^d \sigma(s)\,ds\right)
+$$
+
+## Citations
+
+Cite a reference with its id, and it is numbered in the order of the
+`references` list at the top of the file <Cite id="pbrt4" />. The list prints
+itself at the end of the page.
+
+## Notes
+
+<Note>A note: something worth knowing alongside the text.</Note>
+
+<Note kind="tip">A tip: a better way to do what the text describes.</Note>
+
+<Note kind="warning" title="Careful with this">
+  A warning: something that will go wrong if it is missed.
+</Note>
+
+## An interactive figure
+
+Demos are components of the package's own, in `src/content/<id>/demos/`, built
+from `Demo`, `Slider` and `Toggle`:
+
+<Transmittance />
+
+## Code
+
+Fenced code is highlighted at build time, in C#, HLSL, shell or anything else:
+
+```csharp
+public sealed class ExampleSettings : ScriptableObject
+{
+    [Range(0f, 1f)] public float density = 0.5f;
+}
+```
+
+```hlsl
+float Transmittance(float sigma, float distance)
+{
+    return exp(-sigma * distance);
+}
+```
+
+## API reference
+
+For the docs pages: each public type, then each of its members with its
+signature.
+
+<ApiType name="ExampleSettings" kind="class" namespace="Example.Namespace">
+  An example type, to show the layout.
+
+  <ApiMember signature="public float density">
+    How dense the medium is, from 0 to 1.
+  </ApiMember>
+</ApiType>
