@@ -11,6 +11,47 @@ import { href, parse } from './routes'
 
 const CONTENT = join(import.meta.dirname, 'content')
 
+/** the worst of the words and phrases that mark generated prose */
+const SLOP = new RegExp(
+  '\\b(' +
+    [
+      'delve',
+      'delves',
+      'delving',
+      'leverage',
+      'leverages',
+      'leveraging',
+      'utilize',
+      'utilizes',
+      'utilizing',
+      'facilitate',
+      'facilitates',
+      'seamless',
+      'seamlessly',
+      'cutting-edge',
+      'game[- ]changer',
+      'tapestry',
+      'realm',
+      'beacon',
+      'multifaceted',
+      'meticulous',
+      'meticulously',
+      'paramount',
+      'transformative',
+      'supercharge',
+      'ever-evolving',
+      "it'?s worth noting",
+      "it'?s important to note",
+      "let'?s dive in",
+      'in this article',
+      'in conclusion',
+      'a testament to',
+      'plays a (?:vital|crucial|key|pivotal) role',
+    ].join('|') +
+    ')\\b',
+  'i',
+)
+
 /** every MDX file under src/content, with its text */
 function mdxFiles(): [string, string][] {
   const out: [string, string][] = []
@@ -113,6 +154,42 @@ describe('guides and docs', () => {
       const listed = [...block.matchAll(/\bid:\s*['"]([^'"]+)['"]/g)].map((m) => m[1])
       expect(new Set(listed).size, `${path}: duplicate reference ids`).toBe(listed.length)
       for (const id of cited) expect(listed, `${path} cites ${id}`).toContain(id)
+    }
+  })
+
+  it('use no quizzes', () => {
+    // guides are in-depth articles (docs/AUTHORING.md, "The guide")
+    for (const [path, text] of mdxFiles()) expect(text, path).not.toMatch(/<Quiz\b/)
+  })
+
+  it('use none of the words that mark AI slop', () => {
+    // "Writing without AI slop" in docs/AUTHORING.md; the references are exempt,
+    // since a real paper's title is what it is
+    for (const [path, text] of mdxFiles()) {
+      const prose = text
+        .replace(/export const references = \[[\s\S]*?\n\]/, '')
+        .replace(/\$\$[\s\S]*?\$\$|\$[^$\n]*\$|```[\s\S]*?```|`[^`\n]*`/g, '')
+      const hit = prose.match(SLOP)
+      expect(hit?.[0], `${path} says "${hit?.[0]}"`).toBeUndefined()
+    }
+    for (const p of catalog) {
+      const copy = [p.summary, ...p.features.flatMap((f) => [f.title, f.text ?? ''])].join(' ')
+      expect(copy.match(SLOP)?.[0], p.id).toBeUndefined()
+    }
+  })
+
+  it('follow the structure of an in-depth article once written', () => {
+    // a guide still being written has one section, "Being written"
+    for (const p of catalog) {
+      const text = readFileSync(join(CONTENT, p.id, 'guide.mdx'), 'utf8')
+      const h2 = [...text.matchAll(/^## (.+)$/gm)].map((m) => m[1].trim())
+      if (h2.length === 1 && h2[0] === 'Being written') continue
+      expect(h2[0], `${p.id}: the guide opens on its overview`).toMatch(/overview/i)
+      expect(
+        h2.some((h) => /architecture|structure/i.test(h)),
+        `${p.id}: no architecture section`,
+      ).toBe(true)
+      expect(text, `${p.id}: a guide cites its sources`).toMatch(/<Cite\s/)
     }
   })
 

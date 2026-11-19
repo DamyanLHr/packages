@@ -20,8 +20,8 @@ export function Home() {
           <h1>Unity packages</h1>
           <p className="lead">
             Unity packages I am building, starting with my volumetric sky. Each one comes with a
-            guide that teaches how it works, with figures you can play with and the sources it
-            builds on, and docs for installing it and looking up its API.
+            guide, an in-depth article on how it is built and the sources it builds on, and docs for
+            installing it and looking up its API.
           </p>
         </header>
         <div className="mosaic">

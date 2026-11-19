@@ -11,8 +11,8 @@ Each package gets three pages:
 
 - **Overview** (`/packages/<id>/`): the package's showcase, a full-width page
   of its own pictures, one section per thing it does. From `src/catalog.ts`.
-- **Guide** (`/packages/<id>/guide/`): an interactive, in-depth learning guide
-  to how the package works and everything in it, with references.
+- **Guide** (`/packages/<id>/guide/`): an in-depth technical article on the
+  package's whole technical structure, part by part, with references.
   `src/content/<id>/guide.mdx`.
 - **Docs** (`/packages/<id>/docs/`): installing it, setting it up, and its whole
   public API, everything a user needs. `src/content/<id>/docs.mdx`.
@@ -40,6 +40,9 @@ Run all three of lint, test and build before pushing; CI runs the same.
 ## Rules for everything on the site
 
 - Write in Damyan's voice: first person, plain full sentences, no hype.
+- No AI slop: no puffery, no filler words, no set-piece sentences. See
+  "Writing without AI slop" in `docs/AUTHORING.md`; run `/no-ai-slop` in
+  detect mode on every page you write. A test fails on the worst words.
 - No em or en dashes in prose (a test fails on them). Commas, periods, or `·`.
 - Describe only what the package really does. No invented features, numbers or
   dates.
@@ -71,8 +74,9 @@ Run all three of lint, test and build before pushing; CI runs the same.
 - Avoid the generated-page defaults: all-caps eyebrow labels on every heading,
   identical cards with soft shadows, gradient washes as decoration, arrows
   tacked onto links.
-- Guides should be fun to learn from: see "Making it fun to learn from" in
-  `docs/AUTHORING.md`.
+- Guides are in-depth technical articles that explain each package's whole
+  technical structure, in a fixed order of sections, without quizzes: see
+  "The guide" in `docs/AUTHORING.md`.
 
 ## Package repositories link back here
 

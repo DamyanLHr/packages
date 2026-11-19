@@ -17,22 +17,21 @@ export const references = [
   },
 ]
 
-## How fog eats light
+## Transmittance through a uniform medium
 
-Shine a torch into fog and some of its light never comes out the other side.
-Here is how much. Light that crosses <Scrub name="d" min={0.1} max={5} step={0.1} unit=" m" label="thickness of the fog" />
+Light loses energy as it crosses a participating medium such as fog. Light
+that crosses <Scrub name="d" min={0.1} max={5} step={0.1} unit=" m" label="thickness of the fog" />
 of fog with a density of <Scrub name="sigma" min={0.05} max={3} step={0.05} label="density of the fog" /> per
 metre keeps <Live f={(p) => `${Math.round(100 * Math.exp(-p.sigma * p.d))}%`} /> of its
-energy. Drag either orange number sideways and the answer follows.<Side>Anything in deep orange with a dotted line, or drawn in it in a figure, can be dragged. Focus one with Tab and the arrow keys work too.</Side>
+energy.<Side>Anything in deep orange with a dotted line, or drawn in it in a figure, can be dragged. Focus one with Tab and the arrow keys work too.</Side>
 
-The reason is that every photon has the same small chance of being stopped in
-every little stretch of fog, no matter how far it has come. Fire enough of
-them and count:
+Each photon has the same probability of being absorbed or scattered in every
+short stretch of the medium, whatever distance it has already travelled. The
+simulation below fires photons through the slab and counts how many come out:
 
 <FogSlab />
 
-The count wanders, then settles on the law's answer. That law is the
-Beer-Lambert law <Cite id="pbrt4" />:
+The fraction that comes out converges on the Beer-Lambert law <Cite id="pbrt4" />:
 
 $$
 T(d) = e^{-\sigma d}
@@ -45,19 +44,12 @@ $$
   $L(d) = L(0)\,e^{-\sigma d}$, and $T(d) = L(d) / L(0)$.
 </Reveal>
 
-## The same law as a curve
+## Transmittance as a function of distance
 
-The point on this curve is the same fog as the figure above. Move either one
-and the other follows.
+The point on the curve is the same medium as in the simulation above; both
+figures read the same density and thickness.
 
 <TransmittancePlot />
-
-<Quiz
-  question="A fog 2 m thick lets 20% of the light through. How much gets through 4 m of the same fog?"
-  options={['10%', '4%', 'None', '40%']}
-  answer={1}
-  why="The second 2 m keeps 20% of whatever the first 2 m let through, and 20% of 20% is 4%. Transmittance multiplies along a ray."
-/>
 
 ## Notes in the text
 

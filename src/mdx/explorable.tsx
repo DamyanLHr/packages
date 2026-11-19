@@ -1,18 +1,10 @@
-import {
-  useId,
-  useRef,
-  useState,
-  type KeyboardEvent,
-  type PointerEvent,
-  type ReactNode,
-} from 'react'
+import { useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
 import { createParams, ParamsContext, useAllParams, useParam } from './params'
 
-// The parts that make a guide something you play with, not just read:
+// The parts that let a guide show a mechanism working, beside the text:
 //
 //   <Scrub name="sigma" />   a number in a sentence you can drag
 //   <Live f={(p) => ...} />  a number in a sentence that answers the others
-//   <Quiz />                 a question to check yourself, with the why
 //   <Side>...</Side>         a note in the margin
 //   <Reveal>...</Reveal>     the maths, folded until it is wanted
 //
@@ -121,61 +113,6 @@ export function Scrub({
 export function Live({ f }: { f: (p: Record<string, number>) => ReactNode }) {
   const p = useAllParams()
   return <span className="live">{f(p)}</span>
-}
-
-/**
- * A question to check yourself on. Pick an answer and it says whether it is
- * right and why; a wrong one can be tried again.
- */
-export function Quiz({
-  question,
-  options,
-  answer,
-  why,
-}: {
-  question: ReactNode
-  options: ReactNode[]
-  /** the index of the right option */
-  answer: number
-  why: ReactNode
-}) {
-  const [picked, setPicked] = useState<number | null>(null)
-  const id = useId()
-  const right = picked === answer
-  return (
-    <div className="quiz" role="group" aria-labelledby={`${id}-q`}>
-      <p className="quiz-q" id={`${id}-q`}>
-        {question}
-      </p>
-      <div className="quiz-options">
-        {options.map((o, i) => (
-          <button
-            key={i}
-            type="button"
-            className="quiz-option"
-            aria-pressed={picked === i}
-            data-verdict={picked === i ? (right ? 'right' : 'wrong') : undefined}
-            disabled={right && i !== answer}
-            onClick={() => setPicked(i)}
-          >
-            {o}
-          </button>
-        ))}
-      </div>
-      <div className="quiz-why" aria-live="polite">
-        {picked !== null &&
-          (right ? (
-            <p>
-              <strong>Yes.</strong> {why}
-            </p>
-          ) : (
-            <p>
-              <strong>Not quite.</strong> Have another go.
-            </p>
-          ))}
-      </div>
-    </div>
-  )
 }
 
 /**

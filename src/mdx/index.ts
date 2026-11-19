@@ -1,5 +1,5 @@
 import { ApiMember, ApiType, Cite, Demo, Figure, Note, Slider, Toggle } from './components'
-import { Live, Quiz, Reveal, Scrub, Side } from './explorable'
+import { Live, Reveal, Scrub, Side } from './explorable'
 
 /** What every guide and docs page can use without importing it. */
 export const mdxComponents = {
@@ -13,7 +13,6 @@ export const mdxComponents = {
   ApiMember,
   Scrub,
   Live,
-  Quiz,
   Side,
   Reveal,
 }

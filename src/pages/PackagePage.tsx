@@ -141,8 +141,8 @@ export function PackagePage({ pkg }: { pkg: UnityPackage }) {
             <Link className="way way-guide" href={href({ kind: 'guide', id: pkg.id })}>
               <span className="way-name">The guide</span>
               <span className="way-text">
-                How {pkg.name} works, part by part, with figures you can play with and the sources
-                it builds on.
+                How {pkg.name} is built, part by part: its architecture, every subsystem in depth,
+                what each costs, and the sources it builds on.
               </span>
               <span className="way-go">Read the guide</span>
             </Link>

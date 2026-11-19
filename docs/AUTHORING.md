@@ -93,38 +93,107 @@ features: [
 
 ## The guide
 
-The guide teaches how the package works, deeply enough that a reader could
-build it themselves, and covers everything in it: the ideas, the maths, the
-implementation and the trade-offs. It should be fun. People learn a thing by
-poking it, so the guide gives them something to poke in every section.
+The guide is an in-depth technical article on the package. Whoever reads it
+to the end should understand the package's whole technical structure, every
+part and how the parts connect, well enough to build it, extend it or debug
+it. Write it like a chapter of a graphics programming book or a long article
+in a technical journal: structured, precise and sourced. No quizzes, no games,
+no "fun" framing, no hand-holding.
 
-A shape that works:
+### Structure
 
-1. What the package does, shown first: a figure the reader can play with
-   before any explanation.
-2. Each part in turn: the idea, the maths, how the package implements it, what
-   its settings change, and what it costs.
-3. How the parts fit together.
-4. Where to read further: the references, printed at the end by themselves.
+Every guide has these sections, in this order. Rename a heading to fit the
+package, but keep the order and leave none out.
 
-### Making it fun to learn from
+1. **Overview.** What the package does, in one or two paragraphs, with the
+   result as a render of the package's own. The problem it solves and the
+   constraints it was built under: render pipelines, frame budget, platforms,
+   Unity versions.
+2. **Architecture.** The whole structure before any detail. The components
+   (runtime classes, renderer features and passes, compute and shader stages,
+   assets and settings), what each one owns, and how data moves between them
+   over a frame. Draw two diagrams with archify: the components and how they
+   depend on each other, and the frame, showing which passes run in what
+   order and what each one reads and writes (render targets and buffers, with
+   their formats and resolutions).
+3. **One section per subsystem**, in the order data flows through the frame.
+   Each one covers, where they apply:
+   - **The model**: what it computes and the theory behind it, with the maths.
+   - **The algorithm**: step by step. A long derivation goes in a `<Reveal>`.
+   - **The implementation**: the real classes, passes, shaders and data
+     layouts, with short excerpts of the package's own code.
+   - **Parameters**: every setting, its range, what it changes on screen and
+     what it changes in cost.
+   - **Cost**: GPU time and memory, measured, with the GPU, resolution and
+     quality tier stated.
+   - **Limitations**: the trade-offs taken, what it gets wrong, and what was
+     tried and dropped, with the reason.
+4. **Integration.** How the subsystems connect to each other and to the other
+   packages (the sky filling the upscalers' reactive mask, for example), the
+   execution order inside the render pipeline, and the extension points.
+5. **Performance.** The budget for the whole frame, the quality tiers side by
+   side, and how to profile the package yourself.
+6. **Debugging.** The diagnostics, what each view shows, and the usual
+   failures with their causes and fixes.
+7. **References.** Printed at the end by themselves.
 
-- **Show, then explain.** Open each idea with something to drag, then say why
-  it behaves that way.
-- **Ask before telling.** A `<Quiz>` just before an answer makes the reader
-  guess, and a guess makes the answer stick. Say why in the `why`, not only
-  what.
-- **Put the numbers in the sentences.** A `<Scrub>` in the text that drives the
-  figure beside it beats a slider under the figure: the reader changes the
-  claim and watches it hold.
-- **One idea per figure.** A figure that shows everything teaches nothing.
-  Build the full picture across several figures that share their numbers.
-- **Simulate, do not only plot.** The photons in the kit's first figure teach
-  what the curve in its second only states. Where a process is random or
-  step by step, let the reader watch it happen.
-- **Fold the heavy maths.** Keep the main line readable and put derivations in
-  `<Reveal>`, for the readers who want them.
-- **Asides go in the margin.** `<Side>` keeps the main line moving.
+### Depth and precision
+
+- **Cover everything.** If the package has it, the guide explains it. A
+  subsystem, pass or setting the guide does not mention is a gap to fill.
+- **Be specific.** Name the class, the pass, the texture format, the
+  resolution, the number of steps, the measured milliseconds. "The clouds are
+  raymarched efficiently" says nothing; "the clouds are raymarched at quarter
+  resolution with 64 steps, then reprojected" says how.
+- **Measure, never estimate.** Every number is measured or derived, with the
+  conditions it holds under. Never invent or round up a figure.
+- **Cite the literature.** Every idea taken from a paper, talk or book gets a
+  `<Cite>`, and the guide says where the package departs from it.
+- **One term per thing.** Define a term where it first appears, then keep using
+  that word. Do not rotate synonyms for variety.
+- **Real code only.** Excerpts come from the package, are short, and the text
+  around them says what they do.
+
+### Figures
+
+A figure earns its place by making a mechanism visible that the text alone
+cannot: how transmittance falls with distance, how a phase function changes
+with its asymmetry, what a temporal filter does over several frames. Use:
+
+- **diagrams** (archify) for structure: components, passes, data flow;
+- **plots** for relationships between quantities;
+- **interactive figures** where changing one input and watching the result is
+  the clearest way to show the relationship. Give each one a caption that says
+  what it shows, and make it read correctly as a still image too;
+- **the package's own renders** for results, with the settings that made them.
+
+A `<Scrub>` in a sentence is for a sentence that states a relationship, so the
+reader can test it. Do not scatter them for decoration.
+
+### Writing without AI slop
+
+This applies to every page on the site: guides, docs and the catalog's copy.
+Run `/no-ai-slop` in detect mode on every guide and docs page before pushing,
+and fix what it names. The test fails on the worst words.
+
+- **State the fact.** No puffery ("plays a vital role", "a testament to"), no
+  telling the reader what to think ("this is the key point", "as you can
+  see"), no "it is worth noting". If something matters, the facts around it
+  show why.
+- **Plain verbs.** "Uses", not "leverages" or "utilizes"; "is", not "serves
+  as".
+- **No set pieces.** No "not X, but Y" contrasts, no rhetorical questions
+  answered in the next line, no colon reveals, no dramatic one-line
+  fragments, no closing paragraph that restates the section.
+- **No empty words.** Cut delve, leverage, utilize, facilitate, robust,
+  seamless, cutting-edge, powerful, intricate, meticulous, crucial, paramount,
+  harness, elevate, tapestry, realm, and "in this article", "let's dive in",
+  "in conclusion".
+- **Formatting follows content.** Prose for reasoning; lists only for things
+  that really are lists; bold for terms where they are defined, not for
+  emphasis mid-sentence.
+- **First person, plainly.** "I march the clouds at quarter resolution
+  because..." Say why each decision was made.
 
 ### Text
 
@@ -229,16 +298,9 @@ import { Phase } from './demos/Phase'
 <Phase />
 ```
 
-### Questions, margin notes and folded maths
+### Margin notes and folded maths
 
 ```mdx
-<Quiz
-  question="A fog 2 m thick lets 20% of the light through. How much gets through 4 m?"
-  options={['10%', '4%', 'None', '40%']}
-  answer={1}
-  why="The second 2 m keeps 20% of what the first let through: 20% of 20% is 4%."
-/>
-
 A sentence with an aside.<Side>The aside, in the margin beside it.</Side>
 
 <Reveal title="Show the maths">The derivation, folded until it is wanted.</Reveal>
