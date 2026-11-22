@@ -9,7 +9,7 @@ import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import rehypeSlug from 'rehype-slug'
 import rehypeShiki from '@shikijs/rehype'
-import { BASE } from './src/site'
+import { BASE, ORIGIN } from './src/site'
 import { pages } from './src/pages-list'
 import { buildIndex } from './build/search-index'
 
@@ -31,14 +31,40 @@ function pageFiles(): Plugin {
       const html = String(entry.source)
       const esc = (s: string) =>
         s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
-      for (const page of pages()) {
+      const all = pages()
+      for (const page of all) {
+        const url = `${ORIGIN}${BASE}${page.path}`
+        // what a link to the page shows when it is posted somewhere
+        const share = [
+          `<link rel="canonical" href="${url}" />`,
+          `<meta property="og:type" content="website" />`,
+          `<meta property="og:site_name" content="Unity packages by Damyan Hristov" />`,
+          `<meta property="og:url" content="${url}" />`,
+          `<meta property="og:title" content="${esc(page.title)}" />`,
+          `<meta property="og:description" content="${esc(page.description)}" />`,
+          `<meta property="og:image" content="${ORIGIN}${BASE}${page.image}" />`,
+          `<meta property="og:image:width" content="1200" />`,
+          `<meta property="og:image:height" content="630" />`,
+          `<meta name="twitter:card" content="summary_large_image" />`,
+        ].join('\n    ')
         const out = html
           .replace(/<title>[^<]*<\/title>/, `<title>${esc(page.title)}</title>`)
-          .replace(/(<meta name="description" content=")[^"]*(")/, `$1${esc(page.description)}$2`)
+          .replace(
+            /(<meta\s+name="description"\s+content=")[^"]*(")/,
+            `$1${esc(page.description)}$2`,
+          )
+          .replace('</head>', `  ${share}\n  </head>`)
         const dir = join(outDir, page.path)
         mkdirSync(dir, { recursive: true })
         writeFileSync(join(dir, 'index.html'), out)
       }
+      // every page, for search engines
+      writeFileSync(
+        join(outDir, 'sitemap.xml'),
+        `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${all
+          .map((p) => `  <url><loc>${ORIGIN}${BASE}${p.path}</loc></url>`)
+          .join('\n')}\n</urlset>\n`,
+      )
       writeFileSync(join(outDir, '404.html'), html)
     },
   }

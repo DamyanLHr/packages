@@ -349,6 +349,9 @@ describe('routes', () => {
         expect(paths).toContain(`${p.id}/docs/${d.slug}/`)
     }
     expect(new Set(paths).size, 'two pages share an address').toBe(paths.length)
+    // what a link to each page shows: run `node scripts/og.mjs` after adding a package
+    for (const p of pages())
+      expect(existsSync(join(import.meta.dirname, '..', 'public', p.image)), p.image).toBe(true)
   })
 })
 

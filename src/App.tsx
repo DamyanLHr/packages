@@ -4,7 +4,8 @@ import { pages } from './pages-list'
 import { useRoute } from './nav'
 import { Link } from './router'
 import { href, type Route } from './routes'
-import { BASE, PORTFOLIO, SITE_NAME } from './site'
+import { BASE, PORTFOLIO, SITE_ISSUES, SITE_NAME } from './site'
+import { SocialIcon } from './icons'
 import { Search } from './search/Search'
 import { Home } from './pages/Home'
 import { PackagePage } from './pages/PackagePage'
@@ -49,8 +50,18 @@ export function App() {
         <Page route={route} />
       </main>
       <footer className="foot">
-        <span>Damyan Hristov</span>
-        <a href={PORTFOLIO}>damyanlhr.github.io</a>
+        <div className="foot-who">
+          <span>Damyan Hristov</span>
+          <span className="foot-links">
+            <SocialIcon brand="github" href="https://github.com/DamyanLHr" label="GitHub" />
+            <SocialIcon brand="itch" href="https://damyanhr.itch.io/" label="itch.io" />
+          </span>
+        </div>
+        <nav className="foot-nav" aria-label="Elsewhere">
+          <a href={PORTFOLIO}>Portfolio</a>
+          <a href={`${PORTFOLIO}cv`}>CV</a>
+          <a href={SITE_ISSUES}>Report a problem with this site</a>
+        </nav>
       </footer>
     </div>
   )

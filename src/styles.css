@@ -786,6 +786,43 @@ main {
   padding: 6rem var(--gutter) clamp(2rem, 5vw, 3.6rem);
 }
 
+/* the home page opens the same way: the first package's showcase, with the
+   site's name over it */
+.home-hero {
+  min-height: max(26rem, min(64svh, 46vw));
+}
+
+.home-hero .pkg-title {
+  max-width: none;
+}
+
+/* its words line up with the cards under it */
+.home-hero .pkg-hero-body {
+  max-width: 88rem;
+}
+
+.home-shown {
+  position: absolute;
+  right: max(var(--gutter), calc((100% - 88rem) / 2 + var(--gutter)));
+  bottom: clamp(2rem, 5vw, 3.6rem);
+  color: var(--muted);
+  font: 0.72rem/1.5 var(--mono);
+  text-align: right;
+  text-decoration: none;
+}
+
+.home-shown strong {
+  display: block;
+  color: var(--fg);
+  font: 500 0.95rem/1.4 var(--sans);
+}
+
+@media (max-width: 760px) {
+  .home-shown {
+    display: none;
+  }
+}
+
 .pkg-title {
   margin: 0.2rem 0 0;
   max-width: 14ch;
@@ -1242,8 +1279,8 @@ main {
   font-weight: 500;
 }
 
-/* a middle dot between the names, never at the start of a wrapped line's first item */
-.waiting-list li + li::before {
+/* a middle dot after each name but the last, so a wrapped line never starts with one */
+.waiting-list li:not(:last-child)::after {
   content: '·';
   margin: 0 0.7em;
   color: var(--accent-rule);
@@ -2571,17 +2608,50 @@ figcaption {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.8rem;
-  max-width: 88rem;
-  margin: 2rem auto 0;
+  gap: 0.9rem 2rem;
+  max-width: 96rem;
+  margin: 4rem auto 0;
   padding: 1.4rem var(--gutter) 2.4rem;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.86rem;
+}
+
+.foot-who,
+.foot-nav,
+.foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.2rem;
+}
+
+.foot-links {
+  gap: 0.2rem;
+  font-size: 1.1rem;
 }
 
 .foot a {
   color: var(--muted);
+  text-decoration-color: transparent;
+  transition:
+    color 160ms var(--ease),
+    text-decoration-color 160ms var(--ease);
+}
+
+/* a mark is small: give it a finger's worth of room */
+.foot-links a {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .foot a:hover {
+    color: var(--fg);
+    text-decoration-color: var(--accent-rule);
+  }
 }
 
 /* one rise for the page, not a cascade down every child */

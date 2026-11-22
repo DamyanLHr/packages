@@ -29,8 +29,13 @@ Read `docs/AUTHORING.md` before writing either. `/packages/kit/` (source:
 
 When a package is created, the layout must be updated too: the home page
 mosaic (`src/layout.ts`) and the "More packages" row on each package page are
-sized for the packages there are. Follow "Add a package" in
-`docs/AUTHORING.md`; a test fails until the mosaic fits.
+sized for the packages there are, and the package needs its share image
+(`node scripts/og.mjs`). Follow "Add a package" in `docs/AUTHORING.md`; tests
+fail until the mosaic fits and the image exists.
+
+The site also has a search (its index is built from the catalog and the MDX
+files, nothing to maintain) and writes a `sitemap.xml` and share tags for
+every page at build time (`vite.config.ts`).
 
 ## Commands
 

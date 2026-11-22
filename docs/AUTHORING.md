@@ -30,8 +30,14 @@ source is `src/content/kit/kit.mdx`.
      whether the new one goes first.
    - its portfolio project page links here, and the portfolio's own package
      list may need the same care.
-6. `npm run test` checks the guide exists, the entry is complete, every
-   package has a width in the mosaic and the mosaic's rows are full.
+6. Draw its share image, the picture a link to it shows when posted
+   somewhere: `node scripts/og.mjs`, then look at `public/og/<id>.jpg` and
+   commit it. Run it again when the package gets its hero picture or its
+   name or summary changes. (It needs Playwright with Chromium, which the
+   site itself does not.)
+7. `npm run test` checks the guide exists, the entry is complete, every
+   package has a width in the mosaic, the mosaic's rows are full and every
+   page has its share image.
 
 ## The details sheet
 
