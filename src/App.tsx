@@ -58,6 +58,6 @@ function Page({ route }: { route: Route }) {
   if (route.kind === 'not-found') return <NotFound />
   const pkg = findPackage(route.id)
   if (!pkg) return <NotFound />
-  if (route.kind === 'package') return <PackagePage pkg={pkg} />
+  if (route.kind === 'package') return <PackagePage key={pkg.id} pkg={pkg} />
   return <ArticlePage key={`${pkg.id}/${route.kind}`} pkg={pkg} kind={route.kind} />
 }

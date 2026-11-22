@@ -1,7 +1,11 @@
 // The packages this site documents. Plain data only (no React, no MDX): the
-// build reads it too, to write a page per package. Each package's guide and
-// docs live in src/content/<id>/guide.mdx and docs.mdx (a test checks both
-// exist for every entry). See docs/AUTHORING.md.
+// build reads it too, to write a page per package. Each package's guide lives
+// in src/content/<id>/guide.mdx and its docs in src/content/<id>/docs/. See
+// docs/AUTHORING.md.
+//
+// State only what is true of the package. Where a fact is not settled yet,
+// leave it out or mark it 'unknown': the site then says "to be confirmed"
+// instead of guessing.
 
 /**
  * One picture or clip of the package itself: a render, a capture, a
@@ -45,6 +49,51 @@ export interface Feature {
   shots: Shot[]
 }
 
+/** Whether something is supported: yes, planned, no, or not settled yet. */
+export type Support = 'yes' | 'planned' | 'no' | 'unknown'
+
+/** One line of the compatibility table: a pipeline, a platform, a graphics API. */
+export interface CompatRow {
+  name: string
+  status: Support
+  /** a condition or a version, in a few words: 'Unity 6.0 and later', 'Windows only' */
+  note?: string
+}
+
+export interface CompatGroup {
+  title: string
+  rows: CompatRow[]
+}
+
+/** One released version, for the changelog. */
+export interface Release {
+  /** '1.2.0' */
+  version: string
+  /** the day it was released, as YYYY-MM-DD */
+  date: string
+  /** what changed, one plain sentence each */
+  notes: string[]
+}
+
+/** Something the package works with: another of these packages, or someone else's asset. */
+export interface Integration {
+  /** its name: 'Upscalers' */
+  with: string
+  /** the id of the package here, when it is one of these */
+  id?: string
+  /** what the two do together, in a sentence or two */
+  text: string
+}
+
+/** A build of a demo scene people can download and run on their own hardware. */
+export interface DemoBuild {
+  url: string
+  /** 'Windows, 64-bit' */
+  platform: string
+  /** its size, and anything to know before running it */
+  note?: string
+}
+
 export interface UnityPackage {
   /** URL segment: /packages/<id>/ */
   id: string
@@ -56,10 +105,33 @@ export interface UnityPackage {
   status: 'in-progress' | 'released'
   /** when an in-progress package is due, as you would say it: 'Q2 2027' */
   expected?: string
-  /** the render pipelines, as you would say it: 'URP today, HDRP planned' */
-  pipelines?: string
-  /** the package's own repository, once it is public */
+  /** its listing on the Unity Asset Store, once it is on sale */
+  store?: string
+  /**
+   * its public repository, once there is one: the README, the changelog and
+   * the issue tracker (the source is sold on the Asset Store, not kept here)
+   */
   repo?: string
+  /** the version on sale now: '1.0.0' */
+  version?: string
+  /** the price as the store shows it: '€45' */
+  price?: string
+  /** the licence it is sold under, in a few words */
+  licence?: string
+  /** what it runs on, group by group; see `compat()` */
+  compat: CompatGroup[]
+  /** what it cannot do, or does badly, one plain sentence each */
+  limitations: string[]
+  /** what it works with */
+  integrations: Integration[]
+  /** every released version, newest first */
+  releases: Release[]
+  /** what is planned next, one plain sentence each */
+  roadmap: string[]
+  /** a trailer clip; shown above the sections once it has a `src` */
+  trailer?: Shot
+  /** a demo build to download */
+  demo?: DemoBuild
   /** its slug on the portfolio: https://damyanlhr.github.io/projects/<slug> */
   portfolio: string
   /** the full-width showcase at the top of its page (and the home page, for the first package) */
@@ -68,6 +140,32 @@ export interface UnityPackage {
   cover?: Shot
   /** its page, section by section: one per thing worth seeing */
   features: Feature[]
+}
+
+/**
+ * The compatibility table every package has, with the same rows in the same
+ * order so packages can be compared. Pass what is settled; everything else
+ * stays 'unknown' and shows as "to be confirmed".
+ *
+ *   compat({ 'URP': 'yes', 'HDRP': 'planned', 'Unity version': ['yes', 'Unity 6.0 and later'] })
+ */
+function compat(known: Record<string, Support | [Support, string]> = {}): CompatGroup[] {
+  const row = (name: string): CompatRow => {
+    const k = known[name]
+    if (!k) return { name, status: 'unknown' }
+    return Array.isArray(k) ? { name, status: k[0], note: k[1] } : { name, status: k }
+  }
+  const group = (title: string, names: string[]): CompatGroup => ({ title, rows: names.map(row) })
+  const groups = [
+    group('Unity', ['Unity version']),
+    group('Render pipelines', ['URP', 'HDRP', 'Built-in']),
+    group('Platforms', ['Windows', 'macOS', 'Linux', 'Consoles', 'Mobile', 'VR', 'Web']),
+    group('Graphics APIs', ['DirectX 11', 'DirectX 12', 'Vulkan', 'Metal']),
+  ]
+  const names = groups.flatMap((g) => g.rows.map((r) => r.name))
+  for (const name of Object.keys(known))
+    if (!names.includes(name)) throw new Error(`compat(): no row called "${name}"`)
+  return groups
 }
 
 /** The editor section every package ends on: how it looks to the person using it. */
@@ -86,8 +184,18 @@ export const catalog: UnityPackage[] = [
       'The atmosphere, volumetric clouds, weather, quality tiers and diagnostics of my Unity volumetric sky, as a package of its own.',
     status: 'in-progress',
     expected: 'Q2 2027',
-    pipelines: 'URP today, HDRP planned',
     portfolio: 'sky-package',
+    compat: compat({ URP: 'yes', HDRP: 'planned' }),
+    limitations: [],
+    integrations: [
+      {
+        with: 'Upscalers',
+        id: 'upscalers',
+        text: 'The sky fills the reactive mask that the upscalers package asks for.',
+      },
+    ],
+    releases: [],
+    roadmap: ['HDRP support.'],
     hero: { title: 'Volumetric Sky in a scene' },
     features: [
       {
@@ -141,6 +249,17 @@ export const catalog: UnityPackage[] = [
     status: 'in-progress',
     expected: 'Q2 2027',
     portfolio: 'upscalers-package',
+    compat: compat(),
+    limitations: [],
+    integrations: [
+      {
+        with: 'Volumetric Sky',
+        id: 'sky',
+        text: 'The upscalers package has a reactive-mask hook, and the sky package fills it.',
+      },
+    ],
+    releases: [],
+    roadmap: [],
     hero: { title: 'Upscalers in a scene' },
     features: [
       {
@@ -174,8 +293,12 @@ export const catalog: UnityPackage[] = [
     summary: 'Rendering terrain in Unity, in the same family as the sky and upscaler packages.',
     status: 'in-progress',
     expected: 'Q2 2027',
-    pipelines: 'URP and HDRP',
     portfolio: 'terrain-rendering',
+    compat: compat({ URP: 'planned', HDRP: 'planned' }),
+    limitations: [],
+    integrations: [],
+    releases: [],
+    roadmap: [],
     hero: { title: 'Terrain Rendering in a scene' },
     features: [
       {
@@ -201,8 +324,12 @@ export const catalog: UnityPackage[] = [
     summary: 'Vegetation, rocks and ground detail placed over a terrain.',
     status: 'in-progress',
     expected: 'Q2 2027',
-    pipelines: 'URP and HDRP',
     portfolio: 'terrain-dressing',
+    compat: compat({ URP: 'planned', HDRP: 'planned' }),
+    limitations: [],
+    integrations: [],
+    releases: [],
+    roadmap: [],
     hero: { title: 'Terrain Dressing in a scene' },
     features: [
       {
@@ -233,6 +360,11 @@ export const catalog: UnityPackage[] = [
     status: 'in-progress',
     expected: 'Q2 2027',
     portfolio: 'water-package',
+    compat: compat(),
+    limitations: [],
+    integrations: [],
+    releases: [],
+    roadmap: [],
     hero: { title: 'Water in a scene' },
     features: [
       {
@@ -255,6 +387,7 @@ export function allShots(pkg: UnityPackage): Shot[] {
   return [
     pkg.hero,
     ...(pkg.cover ? [pkg.cover] : []),
+    ...(pkg.trailer ? [pkg.trailer] : []),
     ...pkg.features.flatMap((f) => [...(f.compare ? [f.compare.a, f.compare.b] : []), ...f.shots]),
   ]
 }

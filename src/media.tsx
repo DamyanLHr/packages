@@ -42,10 +42,19 @@ function Slot({ shot, size }: { shot: Shot; size: Size }) {
 }
 
 /** A shot in any of its sizes: the hero, the home band, the art behind a card, or a tile. */
-export function ShotView({ shot, size }: { shot: Shot; size: Size }) {
+export function ShotView({
+  shot,
+  size,
+  watch = false,
+}: {
+  shot: Shot
+  size: Size
+  /** a clip to sit down and watch (a trailer): controls and sound, started by the viewer */
+  watch?: boolean
+}) {
   if (!shot.src) return <Slot shot={shot} size={size} />
   if (isClip(shot.src)) {
-    const quiet = still()
+    const quiet = still() || watch
     return (
       <video
         className={`shot shot-${size}`}
@@ -54,8 +63,8 @@ export function ShotView({ shot, size }: { shot: Shot; size: Size }) {
         aria-label={shot.alt ?? shot.title}
         autoPlay={!quiet}
         controls={quiet}
-        muted
-        loop
+        muted={!watch}
+        loop={!watch}
         playsInline
         preload="metadata"
       />
@@ -154,7 +163,15 @@ export function Viewer({ shots, children }: { shots: Shot[]; children: ReactNode
 }
 
 /** One picture on a package page, named over its lower edge; a finished one opens full size. */
-export function Tile({ shot, className = '' }: { shot: Shot; className?: string }) {
+export function Tile({
+  shot,
+  className = '',
+  watch = false,
+}: {
+  shot: Shot
+  className?: string
+  watch?: boolean
+}) {
   const viewer = useContext(ViewerContext)
   const openable = viewer.canOpen(shot)
   return (
@@ -169,7 +186,7 @@ export function Tile({ shot, className = '' }: { shot: Shot; className?: string 
           <ShotView shot={shot} size="tile" />
         </button>
       ) : (
-        <ShotView shot={shot} size="tile" />
+        <ShotView shot={shot} size="tile" watch={watch} />
       )}
       <figcaption className="tile-cap">
         <span>{shot.title}</span>

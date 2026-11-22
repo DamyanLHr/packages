@@ -139,6 +139,56 @@ describe('catalog', () => {
     expect(total % MOSAIC_COLUMNS, 'the last row of the mosaic is not full').toBe(0)
   })
 
+  it('states its details in a form the site can print, and guesses nothing', () => {
+    for (const p of catalog) {
+      if (p.store) expect(p.store, p.id).toMatch(/^https:\/\/assetstore\.unity\.com\//)
+      // the same groups and rows for every package, so they can be compared
+      expect(
+        p.compat.map((g) => g.title),
+        p.id,
+      ).toEqual(catalog[0].compat.map((g) => g.title))
+      for (const g of p.compat)
+        for (const r of g.rows)
+          expect(['yes', 'planned', 'no', 'unknown'], `${p.id}: ${r.name}`).toContain(r.status)
+      const dates = p.releases.map((r) => r.date)
+      for (const d of dates) expect(d, `${p.id}: a release date`).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+      expect([...dates].sort().reverse(), `${p.id}: releases go newest first`).toEqual(dates)
+      for (const r of p.releases) {
+        expect(r.version, p.id).toMatch(/^\d+\.\d+\.\d+/)
+        expect(r.notes.length, `${p.id} ${r.version} says nothing`).toBeGreaterThan(0)
+      }
+      for (const i of p.integrations)
+        if (i.id)
+          expect(
+            catalog.map((c) => c.id),
+            `${p.id} works with ${i.id}`,
+          ).toContain(i.id)
+      if (p.demo) expect(p.demo.url, p.id).toMatch(/^https:\/\//)
+      const prose = [
+        ...p.limitations,
+        ...p.roadmap,
+        ...p.integrations.map((i) => i.text),
+        ...p.releases.flatMap((r) => r.notes),
+      ].join(' ')
+      expect(prose, p.id).not.toMatch(/[–—]/)
+      expect(prose.match(SLOP)?.[0], p.id).toBeUndefined()
+    }
+  })
+
+  it('has everything a buyer needs once a package is released', () => {
+    for (const p of catalog.filter((p) => p.status === 'released')) {
+      expect(p.store, `${p.id}: where to buy it`).toBeTruthy()
+      expect(p.repo, `${p.id}: its issue tracker`).toBeTruthy()
+      expect(p.version, p.id).toBe(p.releases[0]?.version)
+      expect(p.price, p.id).toBeTruthy()
+      expect(p.licence, p.id).toBeTruthy()
+      // nothing left "to be confirmed" on a package people are paying for
+      for (const g of p.compat)
+        for (const r of g.rows) expect(r.status, `${p.id}: ${r.name}`).not.toBe('unknown')
+      expect(p.limitations.length, `${p.id}: every package has limits`).toBeGreaterThan(0)
+    }
+  })
+
   it('says when an unfinished package is due', () => {
     for (const p of catalog.filter((p) => p.status === 'in-progress')) {
       expect(p.expected, p.id).toBeTruthy()

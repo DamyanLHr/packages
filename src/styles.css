@@ -77,6 +77,15 @@ body {
   }
 }
 
+::selection {
+  background: color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--fg);
+}
+
+html {
+  scrollbar-color: color-mix(in srgb, var(--fg) 22%, transparent) var(--bg);
+}
+
 a {
   color: var(--accent-soft);
   text-decoration-color: var(--accent-rule);
@@ -624,6 +633,10 @@ main {
   letter-spacing: -0.035em;
 }
 
+.pkg-hero-body .chips {
+  margin-top: -0.2rem;
+}
+
 .pkg-summary {
   margin: 0;
   max-width: 52ch;
@@ -1026,6 +1039,268 @@ main {
   z-index: 2;
 }
 
+/* a section with none of its pictures yet: one frame, naming what will go in it */
+.waiting {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 0.9rem;
+  min-height: 11rem;
+  padding: calc(var(--inset) + 1.6rem) calc(var(--inset) + 1.8rem);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background:
+    radial-gradient(
+      60% 120% at 100% 100%,
+      color-mix(in srgb, var(--accent) 10%, transparent),
+      transparent 70%
+    ),
+    var(--raise);
+}
+
+.waiting .slot-corners {
+  inset: var(--inset);
+}
+
+.waiting-note {
+  margin: 0;
+  color: var(--muted);
+  font: 0.72rem/1.4 var(--mono);
+}
+
+.waiting-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: color-mix(in srgb, var(--fg) 88%, var(--muted));
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  font-weight: 500;
+}
+
+/* a middle dot between the names, never at the start of a wrapped line's first item */
+.waiting-list li + li::before {
+  content: '·';
+  margin: 0 0.7em;
+  color: var(--accent-rule);
+}
+
+.waiting-line {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* a trailer keeps its controls clear of the caption */
+.tile-watch .tile-cap {
+  display: none;
+}
+
+/* ---------- the sheet: what it runs on, its releases, how to get it ---------- */
+
+.sheet {
+  max-width: var(--wide);
+  margin: 0 auto;
+  padding: clamp(3.6rem, 8vw, 6.5rem) var(--gutter) 0;
+  scroll-margin-top: 1rem;
+}
+
+.sheet .section-title {
+  margin-bottom: 1.6rem;
+}
+
+/* a data sheet: a label on the left, the facts on the right, a rule between rows */
+.sheet-row {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+  gap: 0.8rem 2.5rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 5rem;
+}
+
+.sheet-row:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+@media (max-width: 760px) {
+  .sheet-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sheet-row > h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.sheet-row h4 {
+  margin: 0 0 0.45rem;
+  color: var(--muted);
+  font: 400 0.72rem/1.4 var(--mono);
+}
+
+.sheet-row p {
+  margin: 0;
+  max-width: 60ch;
+}
+
+.tbc {
+  color: var(--muted);
+}
+
+.sheet-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.4rem 2.5rem;
+}
+
+@media (max-width: 560px) {
+  .sheet-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sheet-list {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  max-width: 64ch;
+}
+
+.sheet-list li::marker {
+  color: var(--accent-rule);
+}
+
+.sheet-list-plain {
+  padding: 0;
+  list-style: none;
+}
+
+.sheet-list-plain li {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.sheet-strong {
+  width: fit-content;
+  color: var(--fg);
+  font-weight: 500;
+}
+
+a.sheet-strong {
+  color: var(--accent-soft);
+}
+
+.sheet-action {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: start;
+}
+
+.sheet-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.5rem;
+  margin: 0;
+}
+
+.sheet-facts dt {
+  color: var(--muted);
+  font: 0.72rem/1.4 var(--mono);
+}
+
+.sheet-facts dd {
+  margin: 0.2rem 0 0;
+}
+
+.releases {
+  display: grid;
+  gap: 1.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.release-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.8rem;
+  margin-bottom: 0.4rem;
+}
+
+/* what it runs on: four groups side by side, each a short list */
+.compat {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1.4rem 2rem;
+}
+
+.compat-group ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.compat-row {
+  display: grid;
+  grid-template-columns: 0.7rem auto 1fr;
+  align-items: baseline;
+  gap: 0 0.55rem;
+}
+
+.compat-name {
+  color: var(--fg);
+}
+
+.compat-status {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.compat-row > :last-child {
+  grid-column: -2 / -1;
+}
+
+/* the mark repeats what the words say: full for supported, a ring for planned,
+   a bar for not supported, a faint ring for not settled */
+.compat-mark {
+  align-self: center;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+}
+
+.compat-yes .compat-mark {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.compat-yes .compat-status {
+  color: var(--fg);
+}
+
+.compat-planned .compat-mark {
+  border-color: var(--accent);
+}
+
+.compat-no .compat-mark {
+  height: 0;
+  border-width: 1px 0 0;
+  border-radius: 0;
+  border-color: var(--muted);
+}
+
 /* ---------- learning it, and the other packages ---------- */
 
 .learn,
@@ -1039,7 +1314,7 @@ main {
   padding-bottom: 4rem;
 }
 
-.learn-title {
+.section-title {
   margin: 0 0 1.2rem;
   font-size: clamp(1.8rem, 4vw, 3rem);
   letter-spacing: -0.03em;
@@ -1750,6 +2025,18 @@ figcaption {
 
 .foot a {
   color: var(--muted);
+}
+
+/* one rise for the page, not a cascade down every child */
+.enter {
+  animation: rise 320ms var(--ease) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
