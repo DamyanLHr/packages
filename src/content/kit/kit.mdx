@@ -3,6 +3,16 @@
 
 import { FogSlab } from './FogSlab'
 import { TransmittancePlot } from './TransmittancePlot'
+import steps4 from './img/steps-4.svg'
+import steps32 from './img/steps-32.svg'
+
+export const meta = {
+  unity: 'An example page, not a package',
+  updated: '2026-11-22',
+  revisions: [
+    { date: '2026-11-22', note: 'Added numbered equations, tables and listings, the pass and measurement tables, and the comparison.' },
+  ],
+}
 
 export const params = { sigma: 0.8, d: 2 }
 
@@ -31,11 +41,25 @@ simulation below fires photons through the slab and counts how many come out:
 
 <FogSlab />
 
-The fraction that comes out converges on the Beer-Lambert law <Cite id="pbrt4" />:
+The fraction that comes out in <Ref to="photons" /> converges on the Beer-Lambert law <Cite id="pbrt4" />, <Ref to="beer-lambert" />:
+
+<Equation id="beer-lambert">
 
 $$
 T(d) = e^{-\sigma d}
 $$
+
+</Equation>
+
+<Table id="notation" caption="Notation. Every symbol the page uses, with its unit.">
+
+| Symbol   | Meaning                                  | Unit     |
+| -------- | ---------------------------------------- | -------- |
+| $\sigma$ | Extinction coefficient of the medium     | m⁻¹      |
+| $d$      | Distance travelled through the medium    | m        |
+| $T$      | Transmittance: the fraction that remains | unitless |
+
+</Table>
 
 <Reveal>
   In a thin slice of fog of thickness $\,dx$, a fraction $\sigma\,dx$ of the
@@ -50,6 +74,17 @@ The point on the curve is the same medium as in the simulation above; both
 figures read the same density and thickness.
 
 <TransmittancePlot />
+
+A ray marcher does not evaluate <Ref to="beer-lambert" /> once. It multiplies
+the transmittance of each step, so the step count decides how closely the
+result follows the curve in <Ref to="curve" />:
+
+<Compare
+  id="steps"
+  caption="Transmittance marched in 4 steps and in 32 (solid), against the exact curve (dashed). Drag the line to compare."
+  a={{ src: steps4, label: '4 steps', alt: 'A staircase of 4 steps that follows the exact curve only at the step ends' }}
+  b={{ src: steps32, label: '32 steps', alt: 'A staircase of 32 steps that is close to the exact curve everywhere' }}
+/>
 
 ## Notes in the text
 
@@ -67,12 +102,19 @@ figures read the same density and thickness.
 Fenced code is highlighted when the site is built, in C#, HLSL or anything
 else:
 
+<Listing id="transmittance" file="Runtime/Fog/Fog.hlsl" line={12} caption="Transmittance through a uniform medium.">
+
 ```hlsl
 float Transmittance(float sigma, float distance)
 {
     return exp(-sigma * distance);
 }
 ```
+
+</Listing>
+
+A listing names its file and can be referred to: <Ref to="transmittance" />. Every
+code block has a button that copies it.
 
 ```csharp
 public sealed class FogSettings : ScriptableObject
@@ -81,12 +123,48 @@ public sealed class FogSettings : ScriptableObject
 }
 ```
 
-Tables work too:
+## Tables
 
-| Setting | What it does |
-| ------- | ------------ |
-| Density | How much the fog stops per metre |
-| Steps   | How many samples are taken along a ray |
+A settings table has the same columns for every component: the setting, its
+type, its range, its default, what it changes on screen and what it costs.
+
+<Table id="settings" wide caption="The settings of the example fog.">
+
+| Setting | Type    | Range     | Default | On screen                         | Cost                         |
+| ------- | ------- | --------- | ------- | --------------------------------- | ---------------------------- |
+| Density | `float` | 0 to 3    | 0.8     | How much the fog stops per metre  | None                         |
+| Steps   | `int`   | 4 to 128  | 32      | How closely the fog follows the law | Linear in the number of steps |
+
+</Table>
+
+A pass table lists what one render pass reads and writes, in the same columns
+for every pass:
+
+<PassTable
+  id="pass-march"
+  name="fog march"
+  reads={[
+    { name: '_CameraDepthTexture', resolution: 'Full', format: 'R32_SFloat', notes: 'Where each ray stops.' },
+    { name: '_FogDensity', resolution: '64 x 64 x 64', format: 'R8_UNorm', notes: 'The density volume.' },
+  ]}
+  writes={[
+    { name: '_FogScattering', resolution: 'Half', format: 'RGBA16F', notes: 'In-scattered light in RGB, transmittance in A.' },
+  ]}
+/>
+
+A measurement table always says what it was measured on. These numbers are
+made up to show the layout:
+
+<Perf
+  id="perf-march"
+  caption="Cost of the example fog march per frame, by step count."
+  conditions="made-up numbers, to show the layout. A real table names the GPU, the resolution, the graphics API, the Unity version and the scene."
+  columns={['16 steps', '32 steps', '64 steps']}
+  rows={[
+    { name: 'GPU A', values: [0.21, 0.4, 0.79] },
+    { name: 'GPU B', values: [0.48, 0.93, null] },
+  ]}
+/>
 
 ## API reference
 

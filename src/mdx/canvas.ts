@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 
 /** The page's colours, read from CSS so a figure matches light and dark. */
 export interface Palette {
@@ -84,3 +84,21 @@ export function useCanvas(
 
 /** Whether the reader has asked for less motion. */
 export const prefersStill = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/**
+ * Whether an element is on screen, or close to it. A figure that moves checks
+ * this and stops its loop while nobody can see it.
+ */
+export function useOnScreen(ref: RefObject<Element | null>) {
+  const [seen, setSeen] = useState(true)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(([e]) => setSeen(e.isIntersecting), {
+      rootMargin: '200px',
+    })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [ref])
+  return seen
+}

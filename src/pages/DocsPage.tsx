@@ -5,6 +5,7 @@ import { DOCS_PAGES, type DocsPageInfo } from '../docs-pages'
 import { Link } from '../router'
 import { href } from '../routes'
 import { Article } from './Article'
+import { Stanza } from './Matter'
 import { PackageHead } from './PackageHead'
 
 /** The docs' pages, and the facts that live on the package's own page. */
@@ -82,7 +83,12 @@ export function DocsPage({ pkg, page }: { pkg: UnityPackage; page: DocsPageInfo 
     <div className="page page-read enter">
       <PackageHead pkg={pkg} current="docs" title={page.title} />
       {written ? (
-        <Article load={load} nav={nav} after={() => <Pager pkg={pkg} current={page} />} />
+        <Article
+          load={load}
+          nav={nav}
+          before={(mod) => <Stanza name={pkg.name} meta={mod.meta} />}
+          after={() => <Pager pkg={pkg} current={page} />}
+        />
       ) : (
         <div className="article-grid has-side">
           <aside className="sidebar">{nav}</aside>

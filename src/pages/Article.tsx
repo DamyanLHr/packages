@@ -4,6 +4,7 @@ import { References } from '../mdx/components'
 import { mdxComponents } from '../mdx'
 import { ReferencesContext } from '../mdx/references'
 import { ParamsProvider } from '../mdx/explorable'
+import { collectLabels, LabelsContext, type Labels } from '../mdx/numbering'
 
 interface Heading {
   id: string
@@ -38,6 +39,7 @@ export function Article({
   const body = useRef<HTMLDivElement>(null)
   const [headings, setHeadings] = useState<Heading[]>([])
   const [active, setActive] = useState<string | null>(null)
+  const [labels, setLabels] = useState<Labels>({})
 
   useEffect(() => {
     let live = true
@@ -84,6 +86,7 @@ export function Article({
       }
     })
     setHeadings(found)
+    setLabels(collectLabels(el))
     if (location.hash)
       document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView()
 
@@ -141,7 +144,9 @@ export function Article({
         {before?.(mod)}
         <ParamsProvider initial={mod.params}>
           <ReferencesContext.Provider value={refs}>
-            <Content components={mdxComponents as never} />
+            <LabelsContext.Provider value={labels}>
+              <Content components={mdxComponents as never} />
+            </LabelsContext.Provider>
           </ReferencesContext.Provider>
         </ParamsProvider>
         {refs.length > 0 && <References items={refs} />}

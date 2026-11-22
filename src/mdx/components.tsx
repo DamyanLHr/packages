@@ -51,20 +51,26 @@ export function Note({
  * screenshots of other products and no vendor logos.
  */
 export function Figure({
+  id,
   src,
   alt,
   caption,
   width,
   height,
+  size = 'wide',
 }: {
+  /** what <Ref to="..."> points at */
+  id?: string
   src: string
   alt: string
   caption?: ReactNode
   width?: number
   height?: number
+  /** 'wide' takes the text and the margin; 'text' stays in the text column */
+  size?: 'wide' | 'text'
 }) {
   return (
-    <figure className="figure">
+    <figure className={`figure${size === 'text' ? ' figure-text' : ''}`} id={id} data-kind="fig">
       <img src={src} alt={alt} width={width} height={height} loading="lazy" decoding="async" />
       {caption && <figcaption>{caption}</figcaption>}
     </figure>
@@ -114,6 +120,7 @@ export function References({ items }: { items: Reference[] }) {
  * package's own, in src/content/<id>/demos/.
  */
 export function Demo({
+  id,
   title,
   controls,
   children,
@@ -122,6 +129,8 @@ export function Demo({
   playing,
   onPlay,
 }: {
+  /** what <Ref to="..."> points at */
+  id?: string
   title: string
   controls?: ReactNode
   children: ReactNode
@@ -133,7 +142,7 @@ export function Demo({
   onPlay?: (playing: boolean) => void
 }) {
   return (
-    <figure className="demo" aria-label={title}>
+    <figure className="demo" id={id} data-kind="fig" aria-label={title}>
       <div className="demo-stage">{children}</div>
       {(controls || onReset || onPlay) && (
         <div className="demo-controls">

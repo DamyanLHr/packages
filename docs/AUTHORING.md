@@ -9,12 +9,15 @@ source is `src/content/kit/kit.mdx`.
 
 1. Add an entry to `src/catalog.ts`: `id` (its address, `/packages/<id>/`),
    `name`, `unityName` once it has one (`com.damyanlhr.<…>`), a one or two
-   sentence `summary`, `status`, `expected` while it is in progress, `pipelines`,
-   and `portfolio` (its slug on the portfolio).
-2. Give it its pictures: a `hero`, and `features`, one section per thing it
+   sentence `summary`, `status`, `expected` while it is in progress, and
+   `portfolio` (its slug on the portfolio).
+2. Give it its details: `compat`, `limitations`, `integrations`, `releases`
+   and `roadmap`. See "The details sheet" below.
+3. Give it its pictures: a `hero`, and `features`, one section per thing it
    does, each with its shots. See "Screenshots and showcases" below.
-3. Create `src/content/<id>/guide.mdx` and `src/content/<id>/docs.mdx`.
-4. **Update the layout.** The layouts are sized for the packages there are, so
+4. Create `src/content/<id>/guide.mdx`. Its docs go in
+   `src/content/<id>/docs/`, a page at a time; see "The docs".
+5. **Update the layout.** The layouts are sized for the packages there are, so
    a new one changes them:
    - the home page mosaic: give the package its width in `src/layout.ts`
      (one or two of the four columns) and adjust the others so every row is
@@ -27,8 +30,55 @@ source is `src/content/kit/kit.mdx`.
      whether the new one goes first.
    - its portfolio project page links here, and the portfolio's own package
      list may need the same care.
-5. `npm run test` checks the guide and docs exist, the entry is complete, every
+6. `npm run test` checks the guide exists, the entry is complete, every
    package has a width in the mosaic and the mosaic's rows are full.
+
+## The details sheet
+
+Every package page ends on a sheet of facts, printed from `src/catalog.ts`.
+The packages are sold on the Unity Asset Store, and people decide from this
+sheet, so it holds only what is true of the package today. **Never guess.**
+A fact that is not settled is left out or marked `'unknown'`, and the site
+prints "to be confirmed".
+
+```ts
+store: 'https://assetstore.unity.com/packages/...', // once it is on sale
+repo: 'https://github.com/DamyanLHr/sky',           // public: README, changelog, issue tracker
+version: '1.0.0',
+price: '€45',
+licence: 'Unity Asset Store EULA, one seat per user',
+compat: compat({
+  'Unity version': ['yes', 'Unity 6.0 and later'],
+  URP: 'yes',
+  HDRP: 'planned',
+  'Built-in': 'no',
+  Windows: 'yes',
+  Web: ['no', 'needs compute shaders'],
+}),
+limitations: ['Clouds do not render into reflection probes.'],
+integrations: [{ with: 'Upscalers', id: 'upscalers', text: 'The sky fills the reactive mask.' }],
+releases: [{ version: '1.0.0', date: '2027-05-12', notes: ['First release.'] }],
+roadmap: ['HDRP support.'],
+trailer: { title: 'Trailer', src: 'media/sky/trailer.mp4', poster: 'media/sky/trailer.webp' },
+demo: { url: 'https://...', platform: 'Windows, 64-bit', note: '310 MB.' },
+```
+
+- **Compatibility** has the same rows for every package (`compat()` in the
+  catalog lists them), so packages can be compared. Each row is `'yes'`,
+  `'planned'`, `'no'` or left out, with an optional note for a version or a
+  condition. Say `'no'` where it is no: what a package does not support is
+  the most useful line on the sheet.
+- **Limitations** are what the package cannot do or does badly, one plain
+  sentence each. Every package has some. Write them before someone finds
+  them.
+- **Releases** go newest first, with the date as `YYYY-MM-DD`. `version` is
+  the newest release's.
+- **Support** is the issue tracker of the package's public repository
+  (`repo`). The source itself is sold on the Asset Store and is not in that
+  repository.
+- A **released** package must have all of it: store link, repository,
+  version, price, licence, every compatibility row settled and at least one
+  limitation. A test fails otherwise.
 
 ## Screenshots and showcases
 
@@ -108,7 +158,8 @@ package, but keep the order and leave none out.
 1. **Overview.** What the package does, in one or two paragraphs, with the
    result as a render of the package's own. The problem it solves and the
    constraints it was built under: render pipelines, frame budget, platforms,
-   Unity versions.
+   Unity versions. What the reader needs to know already. Then a notation
+   `<Table>`: every symbol the guide uses, its meaning and its unit.
 2. **Architecture.** The whole structure before any detail. The components
    (runtime classes, renderer features and passes, compute and shader stages,
    assets and settings), what each one owns, and how data moves between them
@@ -117,25 +168,161 @@ package, but keep the order and leave none out.
    order and what each one reads and writes (render targets and buffers, with
    their formats and resolutions).
 3. **One section per subsystem**, in the order data flows through the frame.
-   Each one covers, where they apply:
-   - **The model**: what it computes and the theory behind it, with the maths.
+   Each one covers, where they apply, in this order:
+   - **The model**: what it computes and the theory behind it, with the maths
+     in numbered `<Equation>`s.
    - **The algorithm**: step by step. A long derivation goes in a `<Reveal>`.
    - **The implementation**: the real classes, passes, shaders and data
-     layouts, with short excerpts of the package's own code.
-   - **Parameters**: every setting, its range, what it changes on screen and
-     what it changes in cost.
-   - **Cost**: GPU time and memory, measured, with the GPU, resolution and
-     quality tier stated.
+     layouts, with short excerpts of the package's own code as `<Listing>`s,
+     and a `<PassTable>` for each render pass.
+   - **Parameters**: every setting in a `<Table>` with the fixed columns
+     Setting, Type, Range, Default, On screen, Cost.
+   - **Cost**: GPU time and memory, measured, in a `<Perf>` table.
+   - **Validation**: how I know it is right. A comparison against a reference
+     (the cited paper's result, a path-traced or brute-force version, a
+     higher tier) as a `<Compare>` or an error plot, with what differs and why.
    - **Limitations**: the trade-offs taken, what it gets wrong, and what was
      tried and dropped, with the reason.
 4. **Integration.** How the subsystems connect to each other and to the other
    packages (the sky filling the upscalers' reactive mask, for example), the
    execution order inside the render pipeline, and the extension points.
-5. **Performance.** The budget for the whole frame, the quality tiers side by
-   side, and how to profile the package yourself.
+5. **Performance.** The budget for the whole frame as a `<Perf>` matrix (GPU
+   by resolution by quality tier), memory split into what persists and what
+   is transient, and how to profile the package yourself.
 6. **Debugging.** The diagnostics, what each view shows, and the usual
-   failures with their causes and fixes.
-7. **References.** Printed at the end by themselves.
+   failures by symptom, with their causes and fixes.
+7. **References.** Printed at the end by themselves, followed by the guide's
+   revisions, where to report a mistake, and how to cite it (the page adds
+   those from `meta`).
+
+A test holds a written guide to this: it opens on its overview, has
+architecture, integration, performance and debugging sections, cites its
+sources, says what version it applies to, and has at least one `<PassTable>`
+and one `<Perf>`.
+
+### Version, date and revisions
+
+Every guide and docs page says what it applies to, at the top of its MDX file:
+
+```mdx
+export const meta = {
+  version: '1.0.0', // the package version the text describes
+  unity: 'Unity 6.0, URP 17', // what it was written against
+  updated: '2027-05-12', // the day the text last changed
+  revisions: [{ date: '2027-05-12', note: 'Rewrote the cloud lighting section for 1.0.' }],
+}
+```
+
+The page prints the first three under its title, and a guide prints the
+revisions at its end. Add a revision whenever the text changes in substance,
+newest first. When the package changes, update the text and the `version`
+together: a guide that describes an old version is worse than none.
+
+### Numbers and cross-references
+
+Sections, figures, equations, tables and listings are numbered by the page.
+Give one an `id` and refer to it with `<Ref to="id" />`, which prints "Figure
+2", "Equation 5", "Table 1", "Listing 3" or "Section 4.2" and links there.
+Refer by `<Ref>`, never by "the figure above": the text gets rearranged and
+"above" stops being true.
+
+```mdx
+<Equation id="beer-lambert">
+
+$$
+T(d) = e^{-\sigma d}
+$$
+
+</Equation>
+
+By <Ref to="beer-lambert" />, doubling the distance squares the transmittance.
+See <Ref to="clouds" /> for how the clouds use it.
+```
+
+A section's id is its heading in lower case with hyphens (`## Volumetric
+clouds` is `volumetric-clouds`). Leave a blank line inside `<Equation>`,
+`<Table>` and `<Listing>` around the Markdown they wrap.
+
+### Tables
+
+```mdx
+<Table id="notation" caption="Notation. Every symbol the guide uses, with its unit.">
+
+| Symbol   | Meaning                              | Unit |
+| -------- | ------------------------------------ | ---- |
+| $\sigma$ | Extinction coefficient of the medium | m⁻¹  |
+
+</Table>
+```
+
+Add `wide` for a table with many columns. Three tables have fixed columns,
+the same in every guide, so a reader learns them once:
+
+- **Notation**: Symbol, Meaning, Unit.
+- **Settings**: Setting, Type, Range, Default, On screen, Cost.
+- **A render pass**, with `<PassTable>`: what the pass reads and what it
+  writes, each with its resolution and format.
+
+```mdx
+<PassTable
+  id="pass-clouds"
+  name="cloud raymarch"
+  reads={[
+    {
+      name: '_CameraDepthTexture',
+      resolution: 'Full',
+      format: 'R32_SFloat',
+      notes: 'Where each ray stops.',
+    },
+  ]}
+  writes={[
+    {
+      name: '_CloudScattering',
+      resolution: 'Quarter',
+      format: 'RGBA16F',
+      notes: 'Light in RGB, transmittance in A.',
+    },
+  ]}
+/>
+```
+
+### Measurements
+
+```mdx
+<Perf
+  id="perf-clouds"
+  caption="Cost of the cloud raymarch per frame, by quality tier."
+  conditions="RTX 3070, 2560 x 1440, DirectX 12, Unity 6.0, the Meadow sample scene, measured with the Frame Debugger's GPU timings over 300 frames."
+  columns={['Low', 'Medium', 'High']}
+  rows={[
+    { name: 'Raymarch', values: [0.41, 0.83, 1.62] },
+    { name: 'Reprojection', values: [0.12, 0.12, 0.12] },
+  ]}
+/>
+```
+
+`conditions` is required and a test checks it: the GPU, the resolution, the
+graphics API, the Unity version, the scene and how it was measured. Use
+`unit="MB"` for memory, and `null` for a cell that was not measured. Never
+put a number in a guide that was not measured.
+
+### Comparisons
+
+```mdx
+import reference from './img/clouds-reference.webp'
+import package from './img/clouds-package.webp'
+
+<Compare
+  id="clouds-validation"
+  caption="The package at the High tier against a 1024-step reference. The difference is in the thin edges."
+  a={{ src: reference, label: 'Reference', alt: 'Clouds marched with 1024 steps' }}
+  b={{ src: package, label: 'High tier', alt: 'The same clouds at the High tier' }}
+/>
+```
+
+Both images are captures of the same view at the same size. Write the
+caption so it states what the comparison shows, not only what the two sides
+are.
 
 ### Depth and precision
 
@@ -326,6 +513,22 @@ photos, no vendor logos.
 
 ### Code
 
+An excerpt of the package's code goes in a `<Listing>`, which numbers it and
+names the file and line it is from:
+
+````mdx
+<Listing id="march" file="Runtime/Clouds/CloudMarch.hlsl" line={120} caption="The inner loop of the cloud march.">
+
+```hlsl
+float Transmittance(float sigma, float distance) { return exp(-sigma * distance); }
+```
+
+</Listing>
+````
+
+Keep excerpts short and real: copy them from the package, and update them
+when it changes. Every code block gets a Copy button.
+
 Fenced code is highlighted at build time; say the language:
 
 ````mdx
@@ -338,13 +541,34 @@ public float density = 0.5f;
 
 ## The docs
 
-Everything a user needs, in the order they need it:
+The docs are for someone using the package. They are six pages, the same six
+for every package, in this order (`src/docs-pages.ts`):
 
-1. **Installing.** Unity's Package Manager, from the package repository's git URL
-   once it is public, and the Unity version and render pipelines it supports.
-2. **Setting it up** in a project, step by step.
-3. **Using it**: the common tasks.
-4. **The API**: every public type and member, with `ApiType` and `ApiMember`:
+| Page            | File                       | What goes in it                                                         |
+| --------------- | -------------------------- | ----------------------------------------------------------------------- |
+| Quick start     | `docs/quick-start.mdx`     | Installing it and getting a first result, in as few steps as it takes.  |
+| Setup           | `docs/setup.mdx`           | Every step of setting it up: pipeline, project settings, sample scenes. |
+| Components      | `docs/components.mdx`      | Each component and asset, and a settings table for each.                |
+| Scripting API   | `docs/api.mdx`             | Every public type and member, with `ApiType` and `ApiMember`.           |
+| Integrations    | `docs/integrations.mdx`    | Using it with my other packages and with other assets.                  |
+| Troubleshooting | `docs/troubleshooting.mdx` | Problems by symptom, each with its cause and its fix.                   |
+
+Files go in `src/content/<id>/docs/`. A page with no file yet keeps its
+address and its place in the sidebar, marked "soon", and says what it will
+cover, so write them one at a time. A released package has all six (a test
+checks). Do not add other pages: a file that is not in `src/docs-pages.ts`
+has no address.
+
+Compatibility, limitations, the changelog and support are not docs pages.
+They live in the catalog and print on the package's own page (see "The
+details sheet"); the docs sidebar links to them.
+
+- **Quick start** is short enough to follow in five minutes: import it from
+  the Asset Store through the Package Manager, add one component, press Play.
+  Number the steps. Leave explanations to Setup and the guide.
+- **Components** has one `##` per component, each with a settings `<Table>`
+  (Setting, Type, Range, Default, On screen, Cost).
+- **Scripting API** documents every public type:
 
 ```mdx
 <ApiType name="SkySettings" kind="class" namespace="Damyanlhr.Sky">
@@ -356,26 +580,42 @@ Everything a user needs, in the order they need it:
 </ApiType>
 ```
 
-5. **Troubleshooting**, and a link to the repository's issues.
+- **Troubleshooting** has one `###` per symptom, worded as the reader sees
+  it ("The clouds flicker when the camera moves"), then the cause, then the
+  fix. End the page with a link to the issue tracker.
+- Give each page a `meta` (see "Version, date and revisions"), so it says
+  which version it applies to.
+
+Everything the guide can use works in the docs too.
+
+## Search
+
+The search covers every package, its sections and details, the guide and the
+docs. Its index is built with the site from the catalog and the MDX files
+(`build/search-index.ts`), so there is nothing to maintain: write clear
+headings, since a heading is what a search lands on.
 
 ## The package's README
 
-Each package repository's README links back here, to its own pages
-specifically. Put this near the top, with the package's id in place of `sky`:
+Each package has a public repository on GitHub that holds its README, its
+changelog and its issue tracker (the source is sold on the Asset Store). Its
+README links back here, to its own pages specifically. Put this near the
+top, with the package's id in place of `sky`:
 
 ```md
 ## Guide and docs
 
-- [Guide](https://damyanlhr.github.io/packages/sky/guide/): how the package works, step by step, with references.
+- [Guide](https://damyanlhr.github.io/packages/sky/guide/): how the package is built, in depth, with references.
 - [Docs](https://damyanlhr.github.io/packages/sky/docs/): installing it, setting it up, and its whole API.
-- [Overview](https://damyanlhr.github.io/packages/sky/)
+- [Overview](https://damyanlhr.github.io/packages/sky/): what it runs on, its limitations and its changelog.
 
 Part of [Damyan Hristov's Unity packages](https://damyanlhr.github.io/packages/).
 ```
 
-When the repository is public, set `repo` in `src/catalog.ts`; the package's
-Repository tab then links to it. Give the portfolio's project entry the same
-links too (`src/content/projects.ts` in DamyanLHr/damyanlhr.github.io).
+When that repository exists, set `repo` in `src/catalog.ts`: the package's
+Support section then links to its issue tracker. When the package is on
+sale, set `store`. Give the portfolio's project entry the same links too
+(`src/content/projects.ts` in DamyanLHr/damyanlhr.github.io).
 
 ## Before pushing
 

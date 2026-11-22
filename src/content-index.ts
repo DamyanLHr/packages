@@ -1,6 +1,21 @@
 import type { ComponentType } from 'react'
 import type { Reference } from './mdx/references'
 
+/**
+ * What a page says about itself, in `export const meta = { ... }`: which
+ * version of the package the text applies to, and when it last changed.
+ */
+export interface PageMeta {
+  /** the package version the text describes: '0.4.0' */
+  version?: string
+  /** the Unity and pipeline versions it was written against: 'Unity 6.0, URP 17' */
+  unity?: string
+  /** the day the text last changed, as YYYY-MM-DD */
+  updated: string
+  /** what changed and when, newest first */
+  revisions?: { date: string; note: string }[]
+}
+
 /** What a guide or docs page compiles to. */
 export interface MdxModule {
   default: ComponentType<{ components?: Record<string, ComponentType<never>> }>
@@ -8,6 +23,7 @@ export interface MdxModule {
   references?: Reference[]
   /** where the page's shared numbers start: what <Scrub>, <Live> and its figures read */
   params?: Record<string, number>
+  meta?: PageMeta
 }
 
 // Each page is its own chunk, fetched when it is opened.

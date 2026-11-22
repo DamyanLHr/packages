@@ -10,12 +10,19 @@ ten minutes and starts it for any commit on main that has no Deploy run yet.
 Each package gets three pages:
 
 - **Overview** (`/packages/<id>/`): the package's showcase, a full-width page
-  of its own pictures, one section per thing it does. From `src/catalog.ts`.
+  of its own pictures, one section per thing it does, ending on a sheet of
+  its details (compatibility, limitations, releases, price, support). From
+  `src/catalog.ts`.
 - **Guide** (`/packages/<id>/guide/`): an in-depth technical article on the
   package's whole technical structure, part by part, with references.
   `src/content/<id>/guide.mdx`.
-- **Docs** (`/packages/<id>/docs/`): installing it, setting it up, and its whole
-  public API, everything a user needs. `src/content/<id>/docs.mdx`.
+- **Docs** (`/packages/<id>/docs/`): six pages, the same for every package
+  (quick start, setup, components, scripting API, integrations,
+  troubleshooting). `src/content/<id>/docs/<page>.mdx`.
+
+The packages are sold on the Unity Asset Store. Each also has a public
+GitHub repository for its README, changelog and issue tracker; the source is
+not in it.
 
 Read `docs/AUTHORING.md` before writing either. `/packages/kit/` (source:
 `src/content/kit/kit.mdx`) shows every component working.
@@ -31,7 +38,7 @@ sized for the packages there are. Follow "Add a package" in
 npm ci            # .npmrc sets legacy-peer-deps; keep it
 npm run dev       # then open http://localhost:5173/packages/
 npm run lint
-npm run test      # content checks: guides and docs exist, citations resolve, no dashes
+npm run test      # content checks: the catalog, guides and docs, references, search
 npm run build     # tsc, then a build that writes an index.html per page
 ```
 
@@ -45,7 +52,9 @@ Run all three of lint, test and build before pushing; CI runs the same.
   detect mode on every page you write. A test fails on the worst words.
 - No em or en dashes in prose (a test fails on them). Commas, periods, or `·`.
 - Describe only what the package really does. No invented features, numbers or
-  dates.
+  dates. People pay for these packages on what the site says: a
+  compatibility row, a limitation or a measurement that is not settled is
+  left out and prints as "to be confirmed", never guessed.
 - Every claim taken from the literature gets a `<Cite>`, and every reference is
   real and checkable: authors, title, where, year, and a URL wherever one
   exists. Never invent or guess a reference.

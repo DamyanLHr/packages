@@ -215,6 +215,56 @@ describe('guides and docs', () => {
     }
   })
 
+  it('point only at things that exist, and number them once', () => {
+    for (const [path, text] of mdxFiles()) {
+      const ids = [
+        ...text.matchAll(
+          /<(?:Equation|Table|Listing|PassTable|Perf|Compare|Figure|Demo)\b[^>]*?\bid="([^"]+)"/g,
+        ),
+      ].map((m) => m[1])
+      expect(new Set(ids).size, `${path}: two numbered things share an id`).toBe(ids.length)
+      // a <Ref> may also point at a figure component's own id or at a section, so
+      // only refs that look like neither are checked against the page's ids
+      const refs = [...text.matchAll(/<Ref\s+to="([^"]+)"/g)].map((m) => m[1])
+      const headings = [...text.matchAll(/^#{2,3}\s+(.+?)\s*$/gm)].map((m) =>
+        m[1]
+          .toLowerCase()
+          .replace(/[^a-z0-9 -]/g, '')
+          .replace(/ /g, '-'),
+      )
+      const dir = join(CONTENT, path, '..')
+      const figures = readdirSync(dir, { recursive: true })
+        .map(String)
+        .filter((f) => f.endsWith('.tsx'))
+        .map((f) => readFileSync(join(dir, f), 'utf8'))
+        .flatMap((src) => [...src.matchAll(/<Demo\b[^>]*?\bid="([^"]+)"/g)].map((m) => m[1]))
+      for (const to of refs)
+        expect(
+          [...ids, ...headings, ...figures],
+          `${path}: <Ref to="${to}"> points at nothing`,
+        ).toContain(to)
+    }
+  })
+
+  it('give every measurement its conditions, and every listing its file', () => {
+    for (const [path, text] of mdxFiles()) {
+      for (const m of text.matchAll(/<Perf\b[\s\S]*?\/>/g))
+        expect(m[0], `${path}: a <Perf> without conditions`).toMatch(/\bconditions="[^"]{20,}"/)
+      for (const m of text.matchAll(/<Listing\b[^>]*>/g))
+        expect(m[0], `${path}: a <Listing> without its file`).toMatch(/\bfile="[^"]+"/)
+    }
+  })
+
+  it('date themselves in a form the site can print', () => {
+    for (const [path, text] of mdxFiles()) {
+      const meta = text.match(/export const meta = \{([\s\S]*?)\n\}/)?.[1]
+      if (!meta) continue
+      const dates = [...meta.matchAll(/\b(?:updated|date):\s*'([^']*)'/g)].map((m) => m[1])
+      expect(meta, `${path}: meta needs an updated date`).toMatch(/\bupdated:/)
+      for (const d of dates) expect(d, path).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    }
+  })
+
   it('use no quizzes', () => {
     // guides are in-depth articles (docs/AUTHORING.md, "The guide")
     for (const [path, text] of mdxFiles()) expect(text, path).not.toMatch(/<Quiz\b/)
@@ -248,6 +298,17 @@ describe('guides and docs', () => {
         `${p.id}: no architecture section`,
       ).toBe(true)
       expect(text, `${p.id}: a guide cites its sources`).toMatch(/<Cite\s/)
+      expect(text, `${p.id}: a guide says what version it applies to`).toMatch(
+        /export const meta = \{/,
+      )
+      for (const part of ['integration', 'performance', 'debugging'])
+        expect(
+          h2.some((h) => h.toLowerCase().includes(part)),
+          `${p.id}: no ${part} section`,
+        ).toBe(true)
+      // the frame's passes are tabled, and its cost is measured
+      expect(text, `${p.id}: no <PassTable>`).toMatch(/<PassTable\b/)
+      expect(text, `${p.id}: no <Perf>`).toMatch(/<Perf\b/)
     }
   })
 

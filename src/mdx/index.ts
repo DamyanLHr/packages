@@ -1,10 +1,12 @@
 import { ApiMember, ApiType, Cite, Demo, Figure, H2, H3, Note, Slider, Toggle } from './components'
+import { Compare, Equation, Listing, PassTable, Perf, Pre, Ref, Table } from './apparatus'
 import { Live, Reveal, Scrub, Side } from './explorable'
 
 /** What every guide and docs page can use without importing it. */
 export const mdxComponents = {
   h2: H2,
   h3: H3,
+  pre: Pre,
   Note,
   Figure,
   Cite,
@@ -17,4 +19,11 @@ export const mdxComponents = {
   Live,
   Side,
   Reveal,
+  Ref,
+  Equation,
+  Table,
+  Listing,
+  PassTable,
+  Perf,
+  Compare,
 }

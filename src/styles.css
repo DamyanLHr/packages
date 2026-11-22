@@ -23,6 +23,8 @@
   --r: 8px;
   --ease: cubic-bezier(0.23, 1, 0.32, 1);
   --gutter: clamp(1.2rem, 4vw, 3rem);
+  /* how far a frame's corner marks and labels sit in from its edge */
+  --inset: clamp(0.9rem, 3vw, 1.6rem);
   --sans: 'Space Grotesk', system-ui, sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
@@ -747,7 +749,6 @@ main {
 
 .pkg {
   --wide: 96rem;
-  --inset: clamp(0.9rem, 3vw, 1.6rem);
 }
 
 .pkg-hero {
@@ -1635,7 +1636,7 @@ a.sheet-strong {
 
 .article {
   min-width: 0;
-  counter-reset: side figure;
+  counter-reset: side figure eq table listing;
   color: color-mix(in srgb, var(--fg) 88%, var(--muted));
   font-size: 1.05rem;
   line-height: 1.7;
@@ -1796,6 +1797,256 @@ a.sheet-strong {
   overflow-x: auto;
   overflow-y: hidden;
   padding: 0.4rem 0;
+}
+
+/* ---------- the apparatus: what a guide numbers and refers to ---------- */
+
+/* which version the text applies to, and when it last changed */
+.stanza {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0;
+  margin: 0 0 2.4rem;
+  color: var(--muted);
+  font: 0.78rem/1.6 var(--mono);
+}
+
+.stanza span + span::before {
+  content: '·';
+  margin: 0 0.7em;
+  color: var(--accent-rule);
+}
+
+/* a reference to a numbered thing: a link that reads "Figure 2" */
+.xref {
+  white-space: nowrap;
+}
+
+.xref-missing {
+  color: var(--accent);
+}
+
+/* where a link lands: marked for a moment, so the eye finds it */
+.article :is(.equation, .table, .listing, .figure, .demo):target {
+  outline: 1px solid var(--accent-rule);
+  outline-offset: 0.6rem;
+  border-radius: var(--r);
+}
+
+.article :is(.equation, .table, .listing, .figure, .demo) {
+  scroll-margin-top: 6rem;
+}
+
+/* an equation with its number at the right edge */
+.equation {
+  counter-increment: eq;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.4rem 0;
+}
+
+.equation-body {
+  min-width: 0;
+}
+
+.equation-n::before {
+  content: '(' counter(eq) ')';
+  color: var(--muted);
+  font: 0.86rem/1 var(--mono);
+}
+
+/* a table with its number and caption above it */
+.table {
+  counter-increment: table;
+  margin: 2.25rem 0;
+}
+
+.table figcaption {
+  margin: 0 0 0.6rem;
+}
+
+.table figcaption::before {
+  content: 'Table ' counter(table) '. ';
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.table .table-scroll table {
+  display: table;
+  width: 100%;
+  margin: 0;
+}
+
+.table-group th {
+  padding-top: 1rem;
+  color: var(--muted);
+  font: 400 0.72rem/1.4 var(--mono);
+}
+
+.pass-table th[scope='row'] {
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* measurements: figures line up, so a column can be read down */
+.perf-table td,
+.perf-table thead th:not(:first-child) {
+  text-align: right;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.perf-table th[scope='row'] {
+  font-weight: 400;
+}
+
+.table-conditions {
+  margin: 0.7rem 0 0;
+  max-width: none;
+  font-size: 0.86rem;
+}
+
+/* an excerpt of the package's code: what it shows, and the file it is from */
+.listing {
+  counter-increment: listing;
+  margin: 2.25rem 0;
+}
+
+.listing figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.2rem 1.2rem;
+  margin: 0 0 0.6rem;
+  max-width: none;
+}
+
+.listing-what::before {
+  content: 'Listing ' counter(listing) '. ';
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.listing-file {
+  font: 0.78rem/1.5 var(--mono);
+}
+
+.listing .code,
+.listing pre {
+  margin: 0;
+}
+
+/* a code block and the button that copies it */
+.code {
+  position: relative;
+  margin: 1.5rem 0;
+}
+
+.code pre {
+  margin: 0;
+}
+
+.code-copy {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--code);
+  color: var(--muted);
+  font: 0.72rem/1.5 var(--mono);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 160ms var(--ease),
+    color 160ms var(--ease);
+}
+
+.code:hover .code-copy,
+.code-copy:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .code-copy {
+    opacity: 1;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .code-copy:hover {
+    color: var(--fg);
+  }
+}
+
+/* a figure that stays in the text column */
+.article > .figure-text {
+  grid-column: 1;
+}
+
+/* two renders compared inside a guide */
+.compare-inline {
+  aspect-ratio: 16 / 9;
+}
+
+.compare-inline .shot {
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+/* after a guide's text: its revisions, corrections, and how to cite it */
+.article-end {
+  margin-top: 4rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.95rem;
+}
+
+.article .article-end h2 {
+  margin: 2rem 0 0.5rem;
+  padding: 0;
+  border: 0;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+}
+
+.revisions {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.revisions li {
+  display: grid;
+  grid-template-columns: 10.5rem minmax(0, 1fr);
+  gap: 0 1rem;
+  max-width: none;
+}
+
+@media (max-width: 560px) {
+  .revisions li {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cite-this {
+  padding: 0.8rem 1rem;
+  border-radius: var(--r);
+  background: var(--raise);
+  font: 0.84rem/1.6 var(--mono);
+  overflow-wrap: anywhere;
+  user-select: all;
 }
 
 /* on this page */
@@ -2351,5 +2602,84 @@ figcaption {
   *::after {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* ---------- print: a guide as a document ---------- */
+
+/* Text goes to ink on paper; figures and code keep their dark ground, since
+   they are drawn for it. */
+@media print {
+  :root {
+    --bg: #fff;
+    --raise: #f3f2ef;
+    --fg: #111;
+    --muted: #555;
+    --line: #c9c7c2;
+    --accent: #a94400;
+    --accent-soft: #8a3800;
+  }
+  .site::after,
+  .nav,
+  .sidebar,
+  .foot,
+  .pager,
+  .tabs,
+  .back,
+  .anchor,
+  .code-copy,
+  .demo-controls,
+  .skip {
+    display: none !important;
+  }
+  .page {
+    max-width: none;
+    padding: 0;
+  }
+  .enter {
+    animation: none;
+  }
+  .article {
+    display: block;
+    font-size: 10.5pt;
+    line-height: 1.5;
+  }
+  .article p,
+  .article li {
+    max-width: none;
+  }
+  /* margin notes come back into the text */
+  .article .side {
+    position: static;
+    width: auto;
+  }
+  .article h2,
+  .article h3 {
+    break-after: avoid;
+  }
+  figure,
+  .equation,
+  pre,
+  .note {
+    break-inside: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+  }
+  .demo,
+  .code,
+  .compare {
+    --raise: #101216;
+    --figure: #101216;
+    --fg: #ece9e4;
+    --muted: #8a8f98;
+    --line: rgba(236, 233, 228, 0.12);
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .article a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    overflow-wrap: anywhere;
   }
 }

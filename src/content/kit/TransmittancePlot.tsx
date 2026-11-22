@@ -107,6 +107,7 @@ export function TransmittancePlot() {
 
   return (
     <Demo
+      id="curve"
       title="What is left after any distance"
       caption="The solid curve is the fog above; the dashed one is the same fog twice as dense. Drag the point along the curve."
     >

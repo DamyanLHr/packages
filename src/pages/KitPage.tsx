@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { loadKit } from '../content-index'
+import { href } from '../routes'
 import { Article } from './Article'
+import { GuideEnd, Stanza } from './Matter'
 
 /** Every component a guide can use, working, for whoever is writing one. Not linked anywhere. */
 export function KitPage() {
@@ -20,7 +22,14 @@ export function KitPage() {
           src/content/kit/kit.mdx.
         </p>
       </header>
-      <Article load={loadKit} numbered />
+      <Article
+        load={loadKit}
+        numbered
+        before={(mod) => <Stanza name="the writing kit" meta={mod.meta} />}
+        after={(mod) => (
+          <GuideEnd title="Writing kit" meta={mod.meta} url={href({ kind: 'kit' })} />
+        )}
+      />
     </div>
   )
 }

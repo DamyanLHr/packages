@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { Demo, Slider } from '../../mdx/components'
 import { useParam } from '../../mdx/params'
-import { prefersStill, useCanvas } from '../../mdx/canvas'
+import { prefersStill, useCanvas, useOnScreen } from '../../mdx/canvas'
 
 // Photons fired into a slab of fog, one at a time, each surviving every small
 // step with the chance the Beer-Lambert law gives it. Count the ones that
@@ -35,10 +35,13 @@ export function FogSlab() {
   const count = useRef({ sent: 0, through: 0, lost: 0 })
   const [frame, tick] = useState(0)
   const drag = useRef(false)
+  const stage = useRef<HTMLCanvasElement>(null)
+  // it only runs while it can be seen
+  const seen = useOnScreen(stage)
 
   // the simulation: its own clock, so a slow frame does not change the odds
   useEffect(() => {
-    if (!playing) return
+    if (!playing || !seen) return
     let raf = 0
     let last = performance.now()
     let spawn = 0
@@ -72,7 +75,7 @@ export function FogSlab() {
     }
     raf = requestAnimationFrame(step)
     return () => cancelAnimationFrame(raf)
-  }, [playing, sigma, d])
+  }, [playing, seen, sigma, d])
 
   // a new slab is a new experiment
   useEffect(() => {
@@ -190,6 +193,7 @@ export function FogSlab() {
 
   return (
     <Demo
+      id="photons"
       title="Firing photons into fog"
       caption="Each dot is a photon. Inside the fog it can be lost at any moment, and the rings show where. Drag the fog's far edge, or change its density, and watch the count settle on the law's answer."
       playing={playing}
@@ -210,7 +214,10 @@ export function FogSlab() {
       }
     >
       <canvas
-        ref={ref}
+        ref={(el) => {
+          ref.current = el
+          stage.current = el
+        }}
         className="demo-canvas demo-canvas-wide"
         role="slider"
         tabIndex={0}
