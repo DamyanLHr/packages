@@ -5,9 +5,12 @@ import { useRoute } from './nav'
 import { Link } from './router'
 import { href, type Route } from './routes'
 import { BASE, PORTFOLIO, SITE_NAME } from './site'
+import { Search } from './search/Search'
 import { Home } from './pages/Home'
 import { PackagePage } from './pages/PackagePage'
-import { ArticlePage } from './pages/ArticlePage'
+import { GuidePage } from './pages/GuidePage'
+import { DocsPage } from './pages/DocsPage'
+import { findDocsPage } from './docs-pages'
 import { KitPage } from './pages/KitPage'
 import { NotFound } from './pages/NotFound'
 
@@ -39,6 +42,7 @@ export function App() {
           <a className="nav-link" href={PORTFOLIO}>
             Portfolio
           </a>
+          <Search />
         </nav>
       </header>
       <main id="main">
@@ -59,5 +63,8 @@ function Page({ route }: { route: Route }) {
   const pkg = findPackage(route.id)
   if (!pkg) return <NotFound />
   if (route.kind === 'package') return <PackagePage key={pkg.id} pkg={pkg} />
-  return <ArticlePage key={`${pkg.id}/${route.kind}`} pkg={pkg} kind={route.kind} />
+  if (route.kind === 'guide') return <GuidePage key={pkg.id} pkg={pkg} />
+  const page = findDocsPage(route.page)
+  if (!page) return <NotFound />
+  return <DocsPage key={`${pkg.id}/${page.slug}`} pkg={pkg} page={page} />
 }

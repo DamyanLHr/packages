@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { anchor } from '../anchor'
 import { allShots, catalog, type Feature, type Shot, type UnityPackage } from '../catalog'
 import { CompareView, ShotView, Tile, Viewer } from '../media'
 import { Link } from '../router'
@@ -6,12 +7,6 @@ import { href } from '../routes'
 import { PORTFOLIO } from '../site'
 import { pipelineLine, statusLine } from '../status'
 import { Details } from './Details'
-
-const anchor = (title: string) =>
-  title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
 
 /**
  * How a section lays out its pictures, from how many it has: one wide; a pair,
@@ -145,7 +140,7 @@ export function PackagePage({ pkg }: { pkg: UnityPackage }) {
               >
                 Read the guide
               </Link>
-              <Link className="btn" href={href({ kind: 'docs', id: pkg.id })}>
+              <Link className="btn" href={href({ kind: 'docs', id: pkg.id, page: '' })}>
                 Docs
               </Link>
               {!pkg.store && <span className="btn btn-off">Asset Store soon</span>}
@@ -209,7 +204,7 @@ export function PackagePage({ pkg }: { pkg: UnityPackage }) {
               </span>
               <span className="way-go">Read the guide</span>
             </Link>
-            <Link className="way" href={href({ kind: 'docs', id: pkg.id })}>
+            <Link className="way" href={href({ kind: 'docs', id: pkg.id, page: '' })}>
               <span className="way-name">The docs</span>
               <span className="way-text">
                 Installing it, setting it up, and its whole API, for when you are using it.

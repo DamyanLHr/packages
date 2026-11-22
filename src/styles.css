@@ -166,7 +166,158 @@ pre,
 
 .nav nav {
   display: flex;
+  align-items: center;
   gap: clamp(1rem, 3vw, 2rem);
+}
+
+/* ---------- search ---------- */
+
+.search-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.36rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font: 0.88rem/1.2 var(--sans);
+  cursor: pointer;
+  transition:
+    color 160ms var(--ease),
+    border-color 160ms var(--ease);
+}
+
+.search-open kbd {
+  padding: 0 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font: 0.7rem/1.5 var(--mono);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .search-open:hover {
+    color: var(--fg);
+    border-color: var(--accent-edge);
+  }
+}
+
+@media (max-width: 560px) {
+  .search-open span,
+  .search-open kbd {
+    display: none;
+  }
+  .search-open {
+    padding: 0.55rem;
+  }
+}
+
+.search {
+  width: min(92vw, 40rem);
+  max-height: min(80vh, 38rem);
+  margin-top: 12vh;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--raise);
+  color: var(--fg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+.search[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.search::backdrop {
+  background: rgba(5, 6, 8, 0.7);
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.search-box input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.6rem;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font: 1.05rem/1.4 var(--sans);
+  caret-color: var(--accent);
+}
+
+.search-box input::placeholder {
+  color: var(--muted);
+}
+
+.search-box input:focus-visible {
+  outline: none;
+}
+
+.search-box input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.search-hits {
+  margin: 0;
+  padding: 0.4rem;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.search-hits:empty {
+  display: none;
+}
+
+.search-hits a {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 6px;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.search-hits [aria-selected='true'] a {
+  background: var(--accent-wash);
+  box-shadow: inset 0 0 0 1px var(--accent-edge);
+}
+
+.search-where {
+  color: var(--muted);
+  font: 0.7rem/1.4 var(--mono);
+}
+
+.search-head {
+  font-weight: 500;
+}
+
+.search-text {
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.search-text mark {
+  background: none;
+  color: var(--accent-soft);
+}
+
+.search-status {
+  margin: 0;
+  padding: 0.8rem 1.1rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.search-status:empty {
+  display: none;
 }
 
 .nav-link {
@@ -375,6 +526,15 @@ main {
 .page-head-name {
   display: grid;
   gap: 0.5rem;
+}
+
+/* which package's docs this page belongs to, under its title */
+.page-head-sub {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font: 400 0.8rem/1.4 var(--mono);
+  letter-spacing: 0;
 }
 
 .lead {
@@ -1454,11 +1614,23 @@ a.sheet-strong {
 
 /* ---------- guides and docs ---------- */
 
-/* contents on the left, the text, and a margin for notes; figures take the
-   text and the margin together */
+/* A reading page is narrower than a showcase, so its head, its sidebar and
+   its text share one left edge and the whole sits in the middle of the screen. */
+.page-read {
+  max-width: 82rem;
+}
+
+/* the sidebar (the docs' pages, then "on this page"), the text, and a margin
+   for notes; figures take the text and the margin together */
 .article-grid {
   display: grid;
-  gap: 3rem;
+  gap: 2rem 3.5rem;
+}
+
+/* a grid item is as wide as its content unless told otherwise, and the docs'
+   row of pages is wider than a phone */
+.article-grid > * {
+  min-width: 0;
 }
 
 .article {
@@ -1474,19 +1646,23 @@ a.sheet-strong {
 }
 
 @media (min-width: 76rem) {
-  .has-toc {
-    grid-template-columns: 11rem minmax(0, 1fr);
+  .has-side {
+    grid-template-columns: 13rem minmax(0, 1fr);
   }
-  .has-toc .toc {
-    grid-column: 1;
-    grid-row: 1;
-  }
-  .has-toc .article {
-    grid-column: 2;
+  .sidebar {
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+    max-height: calc(100svh - 7rem);
+    overflow-y: auto;
+    /* room for focus rings, which the scroll box would clip */
+    margin: -0.4rem;
+    padding: 0.4rem;
+    scrollbar-width: thin;
   }
   .article {
     display: grid;
-    grid-template-columns: minmax(0, 40rem) 13rem;
+    grid-template-columns: minmax(0, 42rem) minmax(0, 1fr);
     column-gap: 2.75rem;
     align-content: start;
   }
@@ -1496,6 +1672,9 @@ a.sheet-strong {
   .article > .demo,
   .article > .figure,
   .article > .refs,
+  .article > .numbered-wide,
+  .article > .article-end,
+  .article > .pager,
   .article > .api-type {
     grid-column: 1 / -1;
   }
@@ -1503,7 +1682,7 @@ a.sheet-strong {
 
 .article p,
 .article li {
-  max-width: 40rem;
+  max-width: 42rem;
   text-wrap: pretty;
 }
 
@@ -1513,18 +1692,59 @@ a.sheet-strong {
 }
 
 .article h2 {
-  margin: 3rem 0 0.8rem;
-  padding-bottom: 0.5rem;
+  margin: 4rem 0 1rem;
+  padding-bottom: 0.6rem;
   border-bottom: 1px solid var(--line);
   color: var(--fg);
-  font-size: 1.45rem;
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  letter-spacing: -0.025em;
+  scroll-margin-top: 5.5rem;
 }
 
 .article h3 {
-  margin: 2.2rem 0 0.6rem;
+  margin: 2.6rem 0 0.7rem;
   color: var(--fg);
-  font-size: 1.15rem;
+  font-size: 1.3rem;
+  letter-spacing: -0.015em;
+  scroll-margin-top: 5.5rem;
+}
+
+.article h4 {
+  margin: 2rem 0 0.5rem;
+  color: var(--fg);
+  font-size: 1.05rem;
   font-weight: 500;
+}
+
+/* a section's number, as a long article has them: set by the page, so the
+   list beside it can show the same one */
+.article [data-n]::before {
+  content: attr(data-n);
+  margin-right: 0.7em;
+  color: var(--muted);
+  font: 400 0.62em/1 var(--mono);
+  letter-spacing: 0;
+}
+
+/* the link to a section, beside its heading: there when you look for it */
+.anchor {
+  margin-left: 0.45em;
+  color: var(--muted);
+  font-weight: 400;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 160ms var(--ease);
+}
+
+.anchor:focus-visible,
+:is(h2, h3):hover > .anchor {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .anchor {
+    opacity: 0.55;
+  }
 }
 
 .article :not(pre) > code {
@@ -1579,13 +1799,12 @@ a.sheet-strong {
 }
 
 /* on this page */
-.toc {
-  position: sticky;
-  top: 5.5rem;
-  align-self: start;
+.toc,
+.docs-nav {
   font-size: 0.88rem;
 }
 
+/* on a narrow screen the list of sections goes, and the docs' pages stay */
 @media (max-width: 75.99rem) {
   .toc {
     display: none;
@@ -1598,7 +1817,8 @@ a.sheet-strong {
   font-size: 0.72rem;
 }
 
-.toc ol {
+.toc ol,
+.docs-nav ol {
   display: grid;
   gap: 0.5rem;
   margin: 0;
@@ -1610,7 +1830,15 @@ a.sheet-strong {
   padding-left: 0.85rem;
 }
 
-.toc a {
+.toc-n {
+  margin-right: 0.5em;
+  font-family: var(--mono);
+  font-size: 0.86em;
+  opacity: 0.7;
+}
+
+.toc a,
+.docs-nav a {
   display: block;
   color: var(--muted);
   line-height: 1.35;
@@ -1622,9 +1850,87 @@ a.sheet-strong {
   color: var(--accent-soft);
 }
 
+.docs-nav a[aria-current='page'] {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.docs-nav ol {
+  margin-bottom: 1.6rem;
+}
+
+.docs-soon {
+  margin-left: 0.6em;
+  color: var(--muted);
+  font: 400 0.68rem/1 var(--mono);
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .toc a:hover {
+  .toc a:hover,
+  .docs-nav a:hover {
     color: var(--fg);
+  }
+}
+
+/* on a narrow screen the docs' pages are a row you can swipe */
+@media (max-width: 75.99rem) {
+  .docs-nav {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 0.2rem var(--gutter) 0.6rem;
+    scrollbar-width: none;
+  }
+  .docs-nav .toc-title {
+    display: none;
+  }
+  .docs-nav ol {
+    display: flex;
+    gap: 0.4rem;
+    margin: 0;
+  }
+  .docs-nav a {
+    padding: 0.36rem 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .docs-nav a[aria-current='page'] {
+    border-color: var(--accent-edge);
+    background: var(--accent-wash);
+  }
+}
+
+/* the page before and the page after */
+.pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 4rem;
+  max-width: 42rem;
+}
+
+.pager-link {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  color: var(--fg);
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 200ms var(--ease);
+}
+
+.pager-next {
+  grid-column: 2;
+  text-align: right;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pager-link:hover {
+    border-color: var(--accent-rule);
   }
 }
 

@@ -1,8 +1,30 @@
-import { useId, type ReactNode } from 'react'
+import { useId, type ComponentProps, type ReactNode } from 'react'
 import { refAnchor, useReferences, type Reference } from './references'
 
 // The components every guide and docs page can use without importing them.
 // docs/AUTHORING.md shows each one; /packages/kit/ renders them all.
+
+/** A heading with a link to itself beside it, so a section can be pointed at. */
+function Heading({ as: Tag, children, id, ...rest }: ComponentProps<'h2'> & { as: 'h2' | 'h3' }) {
+  return (
+    <Tag id={id} {...rest}>
+      {children}
+      {id && (
+        <a className="anchor" href={`#${id}`} aria-label="Link to this section">
+          #
+        </a>
+      )}
+    </Tag>
+  )
+}
+
+export function H2(props: ComponentProps<'h2'>) {
+  return <Heading as="h2" {...props} />
+}
+
+export function H3(props: ComponentProps<'h3'>) {
+  return <Heading as="h3" {...props} />
+}
 
 /** A remark set off from the text: a note, a tip, or a warning. */
 export function Note({

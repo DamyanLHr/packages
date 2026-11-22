@@ -21,6 +21,11 @@
     "src/site.ts",
     "src/catalog.ts",
     "src/pages-list.ts",
+    "src/docs-pages.ts",
+    "src/anchor.ts",
+    "src/status.ts",
+    "src/search/match.ts",
+    "build/**/*.ts",
     "src/**/*.test.ts"
   ]
 }

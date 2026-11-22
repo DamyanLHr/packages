@@ -11,6 +11,7 @@ import rehypeSlug from 'rehype-slug'
 import rehypeShiki from '@shikijs/rehype'
 import { BASE } from './src/site'
 import { pages } from './src/pages-list'
+import { buildIndex } from './build/search-index'
 
 /**
  * GitHub Pages serves a folder's index.html, so every page gets its own copy of
@@ -43,6 +44,22 @@ function pageFiles(): Plugin {
   }
 }
 
+/**
+ * The search index as a module of its own, so the app fetches it only when
+ * someone opens the search: `import('virtual:search-index')`.
+ */
+function searchIndex(): Plugin {
+  const id = 'virtual:search-index'
+  return {
+    name: 'search-index',
+    resolveId: (source) => (source === id ? `\0${id}` : undefined),
+    load: (loaded) =>
+      loaded === `\0${id}`
+        ? `export default ${JSON.stringify(buildIndex(import.meta.dirname))}`
+        : undefined,
+  }
+}
+
 export default defineConfig({
   base: BASE,
   plugins: [
@@ -55,6 +72,7 @@ export default defineConfig({
       }),
     },
     react({ include: /\.(mdx|tsx|ts)$/ }),
+    searchIndex(),
     pageFiles(),
   ],
   test: {

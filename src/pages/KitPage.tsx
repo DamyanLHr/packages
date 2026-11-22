@@ -12,7 +12,7 @@ export function KitPage() {
     return () => meta.remove()
   }, [])
   return (
-    <div className="page page-wide">
+    <div className="page page-read">
       <header className="page-head">
         <h1>Writing kit</h1>
         <p className="lead">
@@ -20,7 +20,7 @@ export function KitPage() {
           src/content/kit/kit.mdx.
         </p>
       </header>
-      <Article load={loadKit} />
+      <Article load={loadKit} numbered />
     </div>
   )
 }

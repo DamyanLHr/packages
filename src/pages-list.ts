@@ -1,4 +1,5 @@
 import { catalog } from './catalog'
+import { DOCS_PAGES } from './docs-pages'
 import { SITE_NAME } from './site'
 
 /** Every page the site has, with what its HTML says before the app runs. */
@@ -24,13 +25,13 @@ export function pages(): PageInfo[] {
       {
         path: `${p.id}/guide/`,
         title: `${p.name} guide · ${SITE_NAME}`,
-        description: `How the ${p.name} package works, step by step, with references.`,
+        description: `How the ${p.name} package is built: its architecture and every subsystem in depth, with references.`,
       },
-      {
-        path: `${p.id}/docs/`,
-        title: `${p.name} docs · ${SITE_NAME}`,
-        description: `Installing the ${p.name} package, setting it up, and its API.`,
-      },
+      ...DOCS_PAGES.map((d) => ({
+        path: `${p.id}/docs/${d.slug ? `${d.slug}/` : ''}`,
+        title: `${d.title} · ${p.name} docs · ${SITE_NAME}`,
+        description: `${p.name} docs. ${d.about}`,
+      })),
     )
   }
   return out

@@ -2,9 +2,12 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { allShots, catalog } from './catalog'
+import { buildIndex, plain, sections } from '../build/search-index'
+import { DOCS_PAGES } from './docs-pages'
 import { MOSAIC_COLUMNS, SPAN } from './layout'
 import { pages } from './pages-list'
 import { href, parse } from './routes'
+import { search } from './search/match'
 
 // Content checks: what a guide author can get wrong fails here, in CI, instead
 // of as a broken page.
@@ -55,15 +58,14 @@ const SLOP = new RegExp(
 /** every MDX file under src/content, with its text */
 function mdxFiles(): [string, string][] {
   const out: [string, string][] = []
-  for (const dir of readdirSync(CONTENT, { withFileTypes: true })) {
-    if (!dir.isDirectory()) continue
-    for (const f of readdirSync(join(CONTENT, dir.name))) {
-      if (f.endsWith('.mdx')) {
-        const path = join(dir.name, f)
-        out.push([path, readFileSync(join(CONTENT, path), 'utf8')])
-      }
+  const walk = (dir: string) => {
+    for (const f of readdirSync(join(CONTENT, dir), { withFileTypes: true })) {
+      const path = join(dir, f.name)
+      if (f.isDirectory()) walk(path)
+      else if (f.name.endsWith('.mdx')) out.push([path, readFileSync(join(CONTENT, path), 'utf8')])
     }
   }
+  walk('')
   return out
 }
 
@@ -76,10 +78,16 @@ describe('catalog', () => {
     expect(ids).not.toContain('kit')
   })
 
-  it('gives every package a guide and docs', () => {
+  it('gives every package a guide, and only docs pages the site knows', () => {
+    const files = DOCS_PAGES.map((d) => `${d.file}.mdx`)
     for (const p of catalog) {
       expect(existsSync(join(CONTENT, p.id, 'guide.mdx')), `${p.id}/guide.mdx`).toBe(true)
-      expect(existsSync(join(CONTENT, p.id, 'docs.mdx')), `${p.id}/docs.mdx`).toBe(true)
+      const dir = join(CONTENT, p.id, 'docs')
+      const written = existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.mdx')) : []
+      // a page not in src/docs-pages.ts has no address and would never be shown
+      for (const f of written) expect(files, `${p.id}/docs/${f}`).toContain(f)
+      // a released package has all of its docs
+      if (p.status === 'released') expect(written.sort(), p.id).toEqual([...files].sort())
     }
   })
 
@@ -255,10 +263,15 @@ describe('guides and docs', () => {
 describe('routes', () => {
   it('round-trips every page', () => {
     for (const p of catalog) {
-      for (const kind of ['package', 'guide', 'docs'] as const) {
+      for (const kind of ['package', 'guide'] as const) {
         expect(parse(href({ kind, id: p.id }))).toEqual({ kind, id: p.id })
       }
+      for (const d of DOCS_PAGES) {
+        const route = { kind: 'docs', id: p.id, page: d.slug } as const
+        expect(parse(href(route))).toEqual(route)
+      }
     }
+    expect(parse('/packages/sky/docs/no-such-page/').kind).toBe('not-found')
     expect(parse('/packages/')).toEqual({ kind: 'home' })
     expect(parse('/packages/kit/')).toEqual({ kind: 'kit' })
     expect(parse('/packages/sky/guide/extra/').kind).toBe('not-found')
@@ -271,6 +284,55 @@ describe('routes', () => {
       expect(paths).toContain(`${p.id}/`)
       expect(paths).toContain(`${p.id}/guide/`)
       expect(paths).toContain(`${p.id}/docs/`)
+      for (const d of DOCS_PAGES.filter((d) => d.slug))
+        expect(paths).toContain(`${p.id}/docs/${d.slug}/`)
     }
+    expect(new Set(paths).size, 'two pages share an address').toBe(paths.length)
+  })
+})
+
+describe('search', () => {
+  it('reads a page as plain words', () => {
+    const mdx = [
+      "import { Fog } from './Fog'",
+      'export const references = [',
+      "  { id: 'a', title: 'A secret title' },",
+      ']',
+      '## Clouds',
+      'The **clouds** are marched at $\\sigma$ per <Cite id="a" /> step.',
+      '```hlsl',
+      'float hidden = 1;',
+      '```',
+      '<ApiType name="SkySettings" kind="class">',
+      '  <ApiMember signature="public float density">How dense.</ApiMember>',
+      '</ApiType>',
+    ].join('\n')
+    const text = plain(mdx)
+    expect(text).toContain('The clouds are marched at')
+    expect(text).not.toMatch(/secret|hidden|import|Cite/)
+    const found = sections(mdx, '/packages/sky/guide/', 'Sky · Guide')
+    expect(found.map((e) => e.u)).toEqual([
+      '/packages/sky/guide/#clouds',
+      '/packages/sky/guide/#api-skysettings',
+    ])
+    expect(found[1].t).toContain('public float density')
+  })
+
+  it('finds every package, and ranks a heading above a mention', () => {
+    const index = buildIndex(join(import.meta.dirname, '..'))
+    for (const p of catalog) {
+      const top = search(index, p.name)[0]
+      expect(top?.entry.u, p.name).toBe(`/packages/${p.id}/`)
+    }
+    expect(search(index, 'zzzz no such thing')).toEqual([])
+    const hits = search(
+      [
+        { u: '/a', p: 'A', h: 'Other', t: 'mentions weather once' },
+        { u: '/b', p: 'B', h: 'Weather', t: 'the section itself' },
+      ],
+      'weather',
+    )
+    expect(hits.map((h) => h.entry.u)).toEqual(['/b', '/a'])
+    expect(hits[1].snippet[1]).toBe('weather')
   })
 })

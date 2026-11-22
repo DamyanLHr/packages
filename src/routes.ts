@@ -1,10 +1,12 @@
+import { findDocsPage } from './docs-pages'
 import { BASE } from './site'
 
 export type Route =
   | { kind: 'home' }
   | { kind: 'package'; id: string }
   | { kind: 'guide'; id: string }
-  | { kind: 'docs'; id: string }
+  /** a page of a package's docs; `page` is its slug, '' for the first */
+  | { kind: 'docs'; id: string; page: string }
   /** every MDX component in one place, for whoever writes a guide; not linked */
   | { kind: 'kit' }
   | { kind: 'not-found'; path: string }
@@ -17,7 +19,9 @@ export function parse(pathname: string): Route {
   if (parts.length === 1 && parts[0] === 'kit') return { kind: 'kit' }
   if (parts.length === 1) return { kind: 'package', id: parts[0] }
   if (parts.length === 2 && parts[1] === 'guide') return { kind: 'guide', id: parts[0] }
-  if (parts.length === 2 && parts[1] === 'docs') return { kind: 'docs', id: parts[0] }
+  if (parts.length === 2 && parts[1] === 'docs') return { kind: 'docs', id: parts[0], page: '' }
+  if (parts.length === 3 && parts[1] === 'docs' && parts[2] && findDocsPage(parts[2]))
+    return { kind: 'docs', id: parts[0], page: parts[2] }
   return { kind: 'not-found', path: pathname }
 }
 
@@ -33,6 +37,6 @@ export function href(route: Exclude<Route, { kind: 'not-found' }>): string {
     case 'guide':
       return `${BASE}${route.id}/guide/`
     case 'docs':
-      return `${BASE}${route.id}/docs/`
+      return `${BASE}${route.id}/docs/${route.page ? `${route.page}/` : ''}`
   }
 }
