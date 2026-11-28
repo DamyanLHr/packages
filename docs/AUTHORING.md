@@ -24,7 +24,7 @@ source is `src/content/kit/kit.mdx`.
      full. Look at the home page at desktop, tablet and phone width.
    - the "More packages" row at the end of each package page
      (`.more-row` in `src/styles.css`): it shows every other package in one
-     row of four, so with one more package it needs five columns, or two rows
+     row of three, so with one more package it needs four columns, or two rows
      that fill.
    - the home page's showcase is the first package in the catalog; decide
      whether the new one goes first.
@@ -62,7 +62,7 @@ compat: compat({
   Web: ['no', 'needs compute shaders'],
 }),
 limitations: ['Clouds do not render into reflection probes.'],
-integrations: [{ with: 'Upscalers', id: 'upscalers', text: 'The sky fills the reactive mask.' }],
+integrations: [{ with: 'Water', id: 'water', text: 'The water reflects the sky.' }],
 releases: [{ version: '1.0.0', date: '2027-05-12', notes: ['First release.'] }],
 roadmap: ['HDRP support.'],
 trailer: { title: 'Trailer', src: 'media/sky/trailer.mp4', poster: 'media/sky/trailer.webp' },
@@ -190,7 +190,7 @@ package, but keep the order and leave none out.
    - **Limitations**: the trade-offs taken, what it gets wrong, and what was
      tried and dropped, with the reason.
 4. **Integration.** How the subsystems connect to each other and to the other
-   packages (the sky filling the upscalers' reactive mask, for example), the
+   packages, the
    execution order inside the render pipeline, and the extension points.
 5. **Performance.** The budget for the whole frame as a `<Perf>` matrix (GPU
    by resolution by quality tier), memory split into what persists and what

@@ -77,7 +77,7 @@ export interface Release {
 
 /** Something the package works with: another of these packages, or someone else's asset. */
 export interface Integration {
-  /** its name: 'Upscalers' */
+  /** its name: 'Water' */
   with: string
   /** the id of the package here, when it is one of these */
   id?: string
@@ -187,13 +187,7 @@ export const catalog: UnityPackage[] = [
     portfolio: 'sky-package',
     compat: compat({ URP: 'yes', HDRP: 'planned' }),
     limitations: [],
-    integrations: [
-      {
-        with: 'Upscalers',
-        id: 'upscalers',
-        text: 'The sky fills the reactive mask that the upscalers package asks for.',
-      },
-    ],
+    integrations: [],
     releases: [],
     roadmap: ['HDRP support.'],
     hero: { title: 'Volumetric Sky in a scene' },
@@ -241,56 +235,9 @@ export const catalog: UnityPackage[] = [
     ],
   },
   {
-    id: 'upscalers',
-    name: 'Upscalers',
-    unityName: 'com.damyanlhr.upscalers',
-    summary:
-      "DLSS and FSR 2 through Unity's own NVIDIA and AMD engine modules, with a reactive-mask hook that the sky package fills.",
-    status: 'in-progress',
-    expected: 'Q2 2027',
-    portfolio: 'upscalers-package',
-    compat: compat(),
-    limitations: [],
-    integrations: [
-      {
-        with: 'Volumetric Sky',
-        id: 'sky',
-        text: 'The upscalers package has a reactive-mask hook, and the sky package fills it.',
-      },
-    ],
-    releases: [],
-    roadmap: [],
-    hero: { title: 'Upscalers in a scene' },
-    features: [
-      {
-        title: 'DLSS',
-        text: "DLSS through Unity's NVIDIA module, next to the scene rendered at full size.",
-        compare: { title: 'Native and DLSS', a: { title: 'Native' }, b: { title: 'DLSS' } },
-        shots: [{ title: 'DLSS, up close' }, { title: 'DLSS in motion' }],
-      },
-      {
-        title: 'FSR 2',
-        text: "FSR 2 through Unity's AMD module, next to the scene rendered at full size.",
-        compare: { title: 'Native and FSR 2', a: { title: 'Native' }, b: { title: 'FSR 2' } },
-        shots: [{ title: 'FSR 2, up close' }, { title: 'FSR 2 in motion' }],
-      },
-      {
-        title: 'The reactive mask',
-        text: 'The hook the sky package fills, and what it changes on moving clouds.',
-        compare: {
-          title: 'Without the mask and with it',
-          a: { title: 'Without the mask' },
-          b: { title: 'With the mask' },
-        },
-        shots: [{ title: 'The mask itself' }],
-      },
-      inTheEditor('the upscalers'),
-    ],
-  },
-  {
     id: 'terrain-rendering',
     name: 'Terrain Rendering',
-    summary: 'Rendering terrain in Unity, in the same family as the sky and upscaler packages.',
+    summary: 'Rendering terrain in Unity, in the same family as the sky package.',
     status: 'in-progress',
     expected: 'Q2 2027',
     portfolio: 'terrain-rendering',

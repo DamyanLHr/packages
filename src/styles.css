@@ -1578,21 +1578,15 @@ a.sheet-strong {
   }
 }
 
-/* the other packages, one row of them: sized for the catalog as it is (five
-   packages, so four others). Update the columns when a package is added. */
+/* the other packages, one row of them: sized for the catalog as it is (four
+   packages, so three others). Update the columns when a package is added. */
 .more-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.9rem;
 }
 
-@media (max-width: 1000px) {
-  .more-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 520px) {
+@media (max-width: 700px) {
   .more-row {
     grid-template-columns: 1fr;
   }
